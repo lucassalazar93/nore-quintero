@@ -1,0 +1,5 @@
+Motion (antes Framer Motion) 14.0.0, bundle independiente (UMD, expone window.Motion).
+Origen: paquete oficial `motion@14.0.0` en npm, archivo dist/motion.js, sin modificar.
+Licencia: MIT (LICENSE-motion.txt). Sin llamadas de red, almacenamiento ni eval (revisado al instalar).
+Se carga de forma diferida desde src/presentation/spring.js, solo con puntero fino y sin "reducir movimiento".
+Actualizar: `npm pack motion@<versión>`, copiar dist/motion.js con el nombre nuevo y cambiar la ruta en spring.js.

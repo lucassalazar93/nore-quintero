@@ -1,0 +1,197 @@
+/* Embudo: tamaño guiado, selección, pasos para pedir e historia «Del horno a tu mesa». Va antes de shop.css y motion.css. */
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---------- Flecha dibujada con CSS ---------- */
+/* No usar los caracteres U+2197 ni U+21A9: el iPhone los convierte en emoji y deforman los botones. */
+.ar{position:relative;display:inline-block;flex:none;width:.5em;height:.5em;margin-inline:.12em;border:solid currentColor;border-width:1.5px 1.5px 0 0;vertical-align:.1em}
+.ar::before{content:'';position:absolute;top:-1.5px;right:-.75px;width:calc(141% + 1px);height:1.5px;border-radius:1px;background:currentColor;transform-origin:100% 50%;rotate:-45deg}
+.ar-right{rotate:45deg}
+.ar-back{rotate:-135deg}
+.product .detail-link{gap:7px}
+
+/* ---------- Empresas y eventos: una sección propia y el mismo aviso donde alguien puede dudar ---------- */
+.business{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(28px,5vw,80px);align-items:center}
+.business-copy h2{font-size:clamp(38px,4.6vw,64px);line-height:1.04;margin-bottom:20px}
+.business-copy>p:not(.eyebrow){max-width:44ch;margin-bottom:26px;font-size:16px;line-height:1.7;color:var(--muted)}
+.business-copy small{display:block;margin-top:12px;font-size:12px;color:var(--muted)}
+.business-services{display:grid;gap:10px}
+.business-item{display:flex;align-items:center;gap:16px;width:100%;padding:16px 22px;border:1px solid #ecdfcf;border-radius:22px;background:#fffdf7c9;box-shadow:var(--soft-shadow);text-align:left;cursor:pointer;transition:transform 160ms var(--ease-out),border-color .2s ease,background-color .2s ease}
+.business-item span{flex:1;min-width:0}
+.business-item strong{display:block;font:500 24px/1.15 'Cormorant Garamond',Georgia,serif;color:var(--dark)}
+.business-item small{display:block;margin-top:4px;font-size:13px;line-height:1.45;color:var(--muted)}
+.business-item .ar{color:var(--wine)}
+.business-item:active{transform:scale(.985)}
+@media(hover:hover) and (pointer:fine){.business-item:hover{border-color:#d3bca5;background:#fffdf7}}
+.corp-callout{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin:18px 0 6px;padding:14px 16px;border:1px dashed #cdb596;border-radius:20px;background:#f8efe1}
+.corp-callout[hidden]{display:none}
+.corp-callout-text{flex:1 1 200px;min-width:0}
+.corp-callout strong{display:block;font-size:14px;font-weight:600;line-height:1.35;color:var(--dark)}
+.corp-callout small{display:block;margin-top:2px;font-size:13px;line-height:1.45;color:var(--muted)}
+.corp-callout-btn{flex:none;min-height:40px;padding:8px 16px;border:1px solid var(--wine);border-radius:100px;background:transparent;color:var(--wine);font-size:13px;font-weight:600;cursor:pointer;transition:background-color .2s ease,color .2s ease,transform 160ms var(--ease-out)}
+.corp-callout-btn:active{transform:scale(.97)}
+@media(hover:hover) and (pointer:fine){.corp-callout-btn:hover{background:var(--wine);color:var(--cream)}}
+#catalog-corporate{margin:0 0 22px}
+.quick-choices .quick-corporate{border-style:dashed;border-color:var(--gold);color:var(--wine);font-weight:500}
+.quick-choices .quick-corporate:hover{background:var(--wine);border-color:var(--wine);border-style:solid;color:var(--cream)}
+@media(max-width:1000px){header nav{gap:16px}}
+@media(max-width:860px){
+.business{grid-template-columns:1fr;gap:26px}
+.business-copy h2{font-size:38px}
+.business-item{padding:14px 18px}
+.business-item strong{font-size:22px}
+}
+@media(max-width:760px){
+.business-copy .button{width:100%}
+.business-copy small{text-align:center}
+.corp-callout-btn{min-height:44px}
+#catalog-corporate{margin:0 0 14px}
+}
+
+/* ---------- Pie de página: cuatro columnas y el crédito de desarrollo ---------- */
+@media(min-width:1001px){.footer-columns{grid-template-columns:1fr 1.25fr 1fr 1.2fr}}
+@media(min-width:601px) and (max-width:1000px){.footer-columns{grid-template-columns:repeat(2,minmax(0,1fr))}.footer-columns>div:last-child{grid-column:auto}}
+.footer-columns button{cursor:pointer}
+.footer-bottom{align-items:center}
+.footer-bottom p{margin:0}
+.footer-credit a{color:var(--wine);font-weight:500;border-bottom:1px solid var(--gold);padding-bottom:2px;white-space:nowrap}
+.footer-credit a:hover{color:var(--dark)}
+@media(max-width:600px){.footer-bottom{align-items:flex-start}}
+
+/* ---------- Permiso del mapa: lo que pasa si sí y si no, a la vista ---------- */
+.cookie-banner p b{font-weight:600;color:var(--dark)}
+
+/* ---------- Favoritos ---------- */
+/* El corazón va en la esquina inferior de la foto: un ancla sin alto justo debajo de la imagen lo sitúa en cualquier rejilla. */
+.fav-slot{position:relative;height:0;z-index:2}
+.fav{position:absolute;right:10px;bottom:10px;display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:#fff9efeb;color:var(--wine);box-shadow:0 4px 14px #361b2226;transition:transform 160ms var(--ease-out),background-color .2s ease,color .2s ease}
+.fav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;transition:fill .2s ease}
+.fav[aria-pressed=true] svg{fill:currentColor}
+.fav:active{transform:scale(.92)}
+@media(hover:hover) and (pointer:fine){.fav:hover{background:var(--wine);color:var(--cream)}}
+.fav-text{position:static;display:inline-flex;align-items:center;gap:6px;width:auto;height:36px;padding:0 14px 0 10px;border:1px solid #e6d6c0;background:#fffdf8;box-shadow:none;font-size:13px}
+.fav-empty{grid-column:1/-1;display:grid;justify-items:center;gap:10px;padding:34px 16px 30px;text-align:center}
+.fav-empty .bag-empty-seal svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.5}
+.fav-empty h3{font-size:30px;line-height:1.05}
+.fav-empty p{max-width:36ch;font-size:15px;line-height:1.6;color:var(--muted)}
+.fav-empty .button{margin-top:12px}
+.product-image .tag{max-width:calc(100% - 76px)}
+
+/* ---------- Detalle del producto: tamaño guiado, complementos y ayuda ---------- */
+.guests{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:22px 0 4px}
+.guests>span{flex-basis:100%;font-size:14px;color:var(--muted)}
+.guests button{border:1px solid var(--line);border-radius:30px;padding:9px 15px;min-height:40px;font-size:13px;background:transparent}
+.guests button[aria-pressed=true]{background:var(--wine);border-color:var(--wine);color:var(--cream)}
+.presentations li.fit{background:#f4e9da;border-radius:18px;margin-inline:-12px;padding-inline:12px;box-shadow:inset 0 0 0 1.5px var(--gold)}
+.per-portion{color:var(--gold)}
+.fit-badge{margin-top:5px;font-style:normal;font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;background:var(--gold);color:#fff9ef;border-radius:100px;padding:3px 9px}
+.ask{margin:16px 0 4px;font-size:14px}
+.suggest{margin-top:22px}
+.suggest-title{font-size:11px!important;letter-spacing:2.1px;font-weight:600;color:var(--gold)!important;text-transform:uppercase;margin:0 0 10px!important}
+.suggest-list{display:grid;gap:8px}
+.suggest-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:#fffdf9;border-radius:18px;padding:8px 16px 8px 8px}
+.suggest-item img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none}
+.suggest-item span{flex:1;min-width:0}
+.suggest-item strong{display:block;font-weight:600;font-size:15px;line-height:1.3}
+.suggest-item small{display:block;font-size:12px;color:var(--muted)}
+.suggest-item i{font-style:normal;color:var(--wine)}
+
+/* ---------- Selección: confianza antes de cotizar y un paso siempre visible ---------- */
+.assurances{list-style:none;margin:6px 0 14px;padding:0;display:grid;gap:6px}
+.assurances li{position:relative;padding-left:24px;font-size:13px;color:var(--muted)}
+.assurances li:before{content:'✓';position:absolute;left:0;color:var(--wine);font-weight:700}
+#bag-dialog:has(#bag-foot[hidden]) .assurances{display:none}
+.bag-bar{position:fixed;left:50%;bottom:calc(22px + var(--lift,0px) + env(safe-area-inset-bottom,0px));z-index:14;width:min(520px,calc(100% - 140px));translate:-50% 170%;opacity:0;pointer-events:none;transition:translate .5s var(--ease-drawer),opacity .3s var(--ease-out)}
+.bag-bar.on{translate:-50% 0;opacity:1;pointer-events:auto}
+.bag-bar-btn{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:56px;background:var(--wine);color:var(--cream);border:0;border-radius:100px;padding:9px 20px 9px 10px;text-align:left;box-shadow:0 14px 40px #650d2845}
+.bag-bar-count{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:50%;background:var(--cream);color:var(--wine);font-weight:600}
+.bag-bar-text{flex:1;min-width:0;line-height:1.25}
+.bag-bar-text strong{display:block;font-size:14px;font-weight:600}
+.bag-bar-text small{display:block;font-size:12px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bag-bar-cta{font-size:14px;font-weight:600;white-space:nowrap}
+.bag-bar-cta i{font-style:normal}
+/* Al agregar, la barra misma lo confirma un momento: el aviso nunca tapa el siguiente paso. */
+.bag-bar-text,.bag-bar-cta,.bag-bar-flash,.bag-bar-btn:after{transition:opacity .3s var(--ease-out),translate .4s var(--ease-out)}
+.bag-bar-flash{position:absolute;left:62px;right:22px;top:50%;translate:0 0;opacity:0;line-height:1.25;pointer-events:none}
+.bag-bar-flash strong{display:block;font-size:14px;font-weight:600}
+.bag-bar-flash small{display:block;font-size:12px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bag-bar.flash .bag-bar-flash{opacity:1;translate:0 -50%}
+.bag-bar.flash .bag-bar-text,.bag-bar.flash .bag-bar-cta{opacity:0;translate:0 -70%}
+.bag-bar.flash .bag-bar-btn:after{opacity:0}
+/* Con la barra a la vista, el pie y el riel de la historia dejan su espacio. */
+body:has(.bag-bar.on) .footer-bottom{padding-bottom:78px}
+.journey-pinned:has(.bag-bar.on) .journey-rail{bottom:98px}
+
+/* ---------- Cómo pedir: tres tarjetas cortas ---------- */
+.steps{padding-top:30px;padding-bottom:50px}
+.steps-title{font-size:clamp(30px,3.4vw,46px);margin-bottom:22px}
+.steps-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.steps-list li{display:grid;grid-template-columns:48px minmax(0,1fr);gap:12px;align-items:start;padding:18px 20px;border:1px solid #ecdfcf;border-radius:26px;background:#fffdf78a}
+.step-n{font:italic 44px/1 'Cormorant Garamond',Georgia,serif;color:var(--gold)}
+.steps-list h3{font-size:22px;margin:0 0 4px}
+.steps-list p{color:var(--muted);font-size:14px;line-height:1.55;margin:0}
+@media(max-width:860px){.steps-list{grid-template-columns:1fr;gap:10px}.steps-list li{padding:14px 16px}.step-n{font-size:36px}.steps-list h3{font-size:20px}.steps{padding:36px 20px 24px}}
+
+/* ---------- Historia «Del horno a tu mesa» ---------- */
+/* Base: tarjetas que se deslizan (móvil y tabletas) o una cuadrícula de cuatro. En pantallas anchas con ratón,
+   journey.js añade `journey-pinned` y los capítulos se fijan y avanzan con el scroll. */
+.journey{position:relative;padding:50px 0 30px}
+.journey-title{padding:0 20px;font-size:clamp(32px,5vw,52px);margin-bottom:20px}
+.journey-stage{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:20px;scrollbar-width:none;overscroll-behavior-x:contain;padding:18px 20px 16px}
+.journey-stage::-webkit-scrollbar{display:none}
+.jchapter{position:relative;flex:0 0 min(78%,340px);scroll-snap-align:start;display:flex;flex-direction:column;padding:8px 8px 20px;border:1px solid #ecdfcf;border-radius:62px 62px 24px 24px;background:#fffdf78a;box-shadow:var(--soft-shadow)}
+.jart{position:relative;width:100%;order:-1}
+.jframe{margin:0;aspect-ratio:1.12;border-radius:54px 54px 16px 16px;overflow:hidden;background:#f0e5d6}
+.jframe img{width:100%;height:100%;object-fit:cover}
+.jseal{position:absolute;left:-2px;top:-12px;width:84px;height:84px;border-radius:50%;background:var(--wine);color:#ffe9bd;border:4px solid var(--cream);box-shadow:0 6px 18px #650d2826;display:grid;place-content:center;gap:2px;text-align:center;padding:6px;rotate:-12deg}
+.jseal strong{font:500 18px/1 'Cormorant Garamond',Georgia,serif}
+.jseal span{font-size:7.5px;letter-spacing:.7px;line-height:1.2;text-transform:uppercase}
+.jcopy{display:flex;flex-direction:column;flex:1;padding:16px 12px 0}
+.jcopy .eyebrow{display:none}
+.jcopy h3{font-size:26px;line-height:1.05;margin-bottom:8px}
+.jcopy>p:not(.eyebrow){color:var(--muted);font-size:14px;line-height:1.55}
+.jcopy .button{margin-top:auto;width:100%;justify-content:space-between}
+.jcopy>p:not(.eyebrow){margin-bottom:16px}
+.journey-rail{display:none}
+@media(min-width:1024px){
+.journey{padding:70px 7% 40px}
+.journey-title{padding:0}
+.journey-stage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;overflow:visible;padding:4px 0 10px}
+.jchapter{flex:none}
+}
+
+/* Fijo y con scroll: solo pantallas anchas con ratón */
+.journey-pinned{padding:0}
+.journey-pinned .journey-title{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.journey-pinned .journey-track{height:300vh}
+.journey-pinned .journey-stage{position:sticky;top:0;display:block;height:100svh;min-height:560px;overflow:hidden;padding:0}
+.journey-pinned .jchapter{position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);align-items:center;gap:7%;flex:none;padding:118px 7% 104px;border:0;border-radius:0;background:none;box-shadow:none;pointer-events:none}
+.journey-pinned .jchapter.is-active{pointer-events:auto}
+.journey-pinned .jart{order:0;justify-self:center;width:min(100%,430px)}
+.journey-pinned .jframe{aspect-ratio:.82;border-radius:220px 220px 40px 40px;box-shadow:0 30px 60px #6a31141a;clip-path:inset(calc((1 - var(--t,1)) * 100%) 0 0 0)}
+.journey-pinned .jchapter:not(:first-child) .jframe{--t:0}
+.journey-pinned .jframe img{scale:calc(1.14 - .14 * var(--t,1))}
+.journey-pinned .jseal{left:-10%;top:7%;width:132px;height:132px;border-width:6px;gap:4px;padding:10px;scale:.4;opacity:0;transition:scale .3s ease,opacity .25s ease}
+.journey-pinned .jseal strong{font-size:27px}
+.journey-pinned .jseal span{font-size:9.5px;letter-spacing:.9px}
+.journey-pinned .jchapter:nth-child(even) .jseal{left:auto;right:-10%;top:auto;bottom:9%}
+.journey-pinned .is-active .jseal{scale:1;opacity:1;transition:scale .8s cubic-bezier(.34,1.3,.64,1) .45s,opacity .4s ease .45s}
+.journey-pinned .jcopy{display:block;padding:0}
+.journey-pinned .jcopy .eyebrow{display:block;margin-bottom:18px}
+.journey-pinned .jcopy h3{font-size:clamp(42px,4.6vw,72px);line-height:1.02;letter-spacing:-1px;margin-bottom:22px}
+.journey-pinned .jcopy>p:not(.eyebrow){font-size:17px;line-height:1.75;max-width:440px;margin-bottom:0}
+.journey-pinned .jcopy .button{width:auto;margin-top:28px}
+.journey-pinned .jcopy>*{opacity:0;translate:0 26px;transition:opacity .35s var(--ease-out),translate .35s var(--ease-out)}
+.journey-pinned .is-active .jcopy>*{opacity:1;translate:0 0;transition:opacity .7s var(--ease-out) calc(var(--k,0) * 70ms + 140ms),translate .8s var(--ease-out) calc(var(--k,0) * 70ms + 140ms)}
+.jcopy>:nth-child(2){--k:1}.jcopy>:nth-child(3){--k:2}.jcopy>:nth-child(4){--k:3}
+.journey-pinned .journey-rail{display:grid;position:absolute;left:7%;right:7%;bottom:30px;grid-template-columns:1fr auto;gap:8px 20px;align-items:end}
+.journey-label{font-size:11px;letter-spacing:2.3px;font-weight:600;color:var(--gold);text-transform:uppercase}
+.journey-rail b{font:500 36px/1 'Cormorant Garamond',Georgia,serif;color:var(--wine);font-variant-numeric:tabular-nums}
+.journey-bar{grid-column:1/-1;height:3px;border-radius:3px;background:#e5d6c2;overflow:hidden}
+.journey-bar>span{display:block;height:100%;background:var(--wine);transform-origin:left;transform:scaleX(0)}
+
+/* ---------- Opiniones reales (solo aparecen si hay) ---------- */
+.proof-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
+.proof figure{margin:0}
+.proof blockquote{margin:0 0 14px;font:italic 26px/1.25 'Cormorant Garamond',Georgia,serif;color:var(--wine)}
+.proof figcaption strong{display:block;font-size:14px}
+.proof figcaption small{color:var(--muted);font-size:12px}

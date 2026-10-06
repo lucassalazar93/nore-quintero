@@ -1,0 +1,24 @@
+// Composition root: the only module that wires concrete adapters to use cases and UI.
+import {siteConfig} from './config/site.js';
+import {catalogRepository} from './infrastructure/catalog-repository.js';
+import {createPreferenceStorage, clipboard, messenger, renderMap} from './infrastructure/browser.js';
+import {createStorefront, createInquiryService} from './application/storefront.js';
+import {createPrivacyService} from './application/privacy.js';
+import {createFavorites} from './application/favorites.js';
+import {mountCommerce} from './presentation/commerce.js';
+import {mountPrivacy} from './presentation/privacy.js';
+import {mountNavigation} from './presentation/navigation.js';
+import {createMotion} from './presentation/motion.js';
+import {createFunnel} from './presentation/funnel.js';
+import {mountJourney} from './presentation/journey.js';
+const motion = createMotion();
+const storefront = createStorefront(catalogRepository);
+const funnel = createFunnel({storefront, motion});
+const inquiry = createInquiryService({number: siteConfig.whatsappNumber, clipboard, messenger});
+const privacy = createPrivacyService({storage: createPreferenceStorage(siteConfig.privacyKey), clock: Date.now, retentionDays: siteConfig.privacyRetentionDays});
+const favorites = createFavorites({storage: createPreferenceStorage(siteConfig.favoritesKey), ids: storefront.products().map(product => product.id)});
+mountCommerce({storefront, inquiry, motion, funnel, favorites});
+funnel.mount();
+mountPrivacy({service:privacy, map:{render:renderMap}});
+mountNavigation();
+motion.mount({onLibrary: library => mountJourney(library, storefront)});

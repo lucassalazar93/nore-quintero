@@ -1,0 +1,330 @@
+/*
+ * Modales. Va al final: una sola fuente para la forma, el scroll y el movimiento de los seis diálogos.
+ * Estructura: dialog.modal > .modal-bar (fija) + .modal-body (se desplaza) + .modal-foot (fija, opcional).
+ * Tres presentaciones: tarjeta centrada, panel lateral para la selección (≥761 px) y hoja inferior (≤760 px).
+ * Los selectores `dialog.modal` ganan a las reglas heredadas de base/boutique/responsive sin usar !important.
+ */
+
+/* ---------- Forma común ---------- */
+dialog.modal{--bar:64px;padding:0;border:1px solid #e8d9c4;border-radius:32px;background:var(--cream);color:var(--dark);max-width:none;overflow:hidden;overscroll-behavior:contain;box-shadow:0 40px 110px #260d2447}
+dialog.modal[open]{display:flex;flex-direction:column;animation:none}
+dialog.modal:focus,dialog.modal:focus-visible{outline:none}
+
+/* La barra flota sobre el contenido; al desplazar se vuelve opaca y nada queda debajo del botón de cerrar. */
+.modal-bar{position:absolute;inset:0 0 auto;z-index:4;display:flex;align-items:center;justify-content:flex-end;height:var(--bar);padding:0 12px;pointer-events:none;transition:background-color .25s ease,box-shadow .25s ease}
+.modal.scrolled>.modal-bar{background:var(--cream);box-shadow:0 1px 0 #eaddca,0 14px 22px -20px #361b2255}
+.modal-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#d9c7ae transparent;padding:var(--bar) 40px 38px}
+.modal-foot{position:relative;flex:none;padding:14px 40px 26px;background:var(--cream)}
+.modal-foot[hidden]{display:none}
+.modal-foot::before{content:'';position:absolute;inset:auto 0 100%;height:16px;background:linear-gradient(to top,var(--cream),#fff9ef00);pointer-events:none}
+dialog.modal .modal-foot .button{margin:0}
+
+/* Cerrar: un círculo con la equis dibujada, siempre centrada */
+dialog.modal .close{position:relative;float:none;top:auto;right:auto;z-index:auto;display:grid;place-items:center;flex:none;width:42px;height:42px;margin:0;padding:0;border:1px solid #e6d6c0;border-radius:50%;background:#fff9efeb;color:var(--dark);font-size:0;line-height:0;pointer-events:auto;box-shadow:0 6px 18px #361b221a}
+dialog.modal .close::before,dialog.modal .close::after{content:'';position:absolute;left:50%;top:50%;width:15px;height:1.5px;margin:-.75px 0 0 -7.5px;border-radius:2px;background:currentColor;rotate:45deg;transition:rotate .35s var(--ease-out)}
+dialog.modal .close::after{rotate:-45deg}
+dialog.modal .close:focus-visible{outline-offset:3px}
+@media(hover:hover) and (pointer:fine){
+dialog.modal .close:hover{background:var(--wine);border-color:var(--wine);color:var(--cream)}
+dialog.modal .close:hover::before{rotate:135deg}
+dialog.modal .close:hover::after{rotate:45deg}
+}
+
+/* Fondo: se funde con el modal; `--scrim` lo atenúa mientras se arrastra una hoja */
+dialog.modal::backdrop{background:#2a1119a6;backdrop-filter:blur(10px);opacity:0;transition:opacity 220ms var(--ease-out),overlay 220ms allow-discrete,display 220ms allow-discrete}
+dialog.modal[open]::backdrop{opacity:var(--scrim,1);transition-duration:400ms}
+@starting-style{dialog.modal[open]::backdrop{opacity:0}}
+/* Con barra de scroll clásica, su carril queda fuera del fondo: toma el mismo tono para no dejar una franja clara. */
+@media(hover:hover) and (pointer:fine){
+html{transition:background-color .38s ease}
+html:has(dialog.modal[open]){background-color:#756264}
+}
+
+/* ---------- Tarjeta centrada y panel lateral (tabletas y PC) ---------- */
+@media(min-width:761px){
+dialog.modal{width:min(560px,calc(100% - 48px));max-height:min(88dvh,820px);opacity:0;translate:0 14px;scale:.97;transition:opacity 180ms var(--ease-out),translate 180ms var(--ease-out),scale 180ms var(--ease-out),overlay 180ms allow-discrete,display 180ms allow-discrete}
+dialog.modal[open]{opacity:1;translate:0 0;scale:1;transition:opacity 260ms var(--ease-out),translate 360ms var(--ease-out),scale 360ms var(--ease-out),overlay 360ms allow-discrete,display 360ms allow-discrete}
+@starting-style{dialog.modal[open]{opacity:0;translate:0 14px;scale:.97}}
+dialog.modal.legal-dialog{width:min(760px,calc(100% - 48px))}
+dialog.modal.concierge{width:min(940px,calc(100% - 48px));max-height:min(92dvh,780px);border:0}
+
+/* El detalle del producto solo se funde: su foto viaja sola desde la tarjeta y necesita medidas exactas. */
+dialog.modal-product{width:min(620px,calc(100% - 48px));translate:none;scale:none}
+dialog.modal-product[open]{translate:none;scale:none}
+@starting-style{dialog.modal-product[open]{opacity:0;translate:none;scale:none}}
+
+/* La selección es un panel que entra desde la derecha a todo el alto: se revisa el pedido sin perder la página de vista. */
+dialog.modal-drawer{inset:12px 12px 12px auto;width:min(470px,calc(100% - 24px));height:auto;max-height:none;margin:0;opacity:1;scale:none;translate:calc(100% + 28px) 0;box-shadow:-24px 0 90px #260d2440;transition:translate 300ms var(--ease-drawer),overlay 300ms allow-discrete,display 300ms allow-discrete}
+dialog.modal-drawer[open]{opacity:1;scale:none;translate:0 0;transition:translate 500ms var(--ease-drawer),overlay 500ms allow-discrete,display 500ms allow-discrete}
+@starting-style{dialog.modal-drawer[open]{opacity:1;scale:none;translate:calc(100% + 28px) 0}}
+}
+
+/* ---------- Hoja inferior (móvil) ---------- */
+@media(max-width:760px){
+dialog.modal{--bar:56px;inset:auto 0 0;width:100%;max-height:92dvh;margin:0;border:0;border-radius:28px 28px 0 0;box-shadow:0 -18px 60px #260d2433;translate:0 100%;transition:translate 300ms var(--ease-drawer),overlay 300ms allow-discrete,display 300ms allow-discrete}
+dialog.modal[open]{translate:0 0;transition:translate 500ms var(--ease-drawer),overlay 500ms allow-discrete,display 500ms allow-discrete}
+@starting-style{dialog.modal[open]{translate:0 100%}}
+/* Sin desenfoque en el teléfono: la hoja sube a 60 fps incluso en equipos modestos. */
+dialog.modal::backdrop{background:#2a1119b8;backdrop-filter:none}
+/* La barra es el agarre: se arrastra hacia abajo para cerrar (motion.js). */
+.modal-bar{padding:8px 8px 0;pointer-events:auto;touch-action:none;cursor:grab}
+.modal-bar::before{content:'';position:absolute;top:9px;left:50%;width:42px;height:5px;margin-left:-21px;border-radius:5px;background:#d3c0a6;transition:background-color .25s ease}
+.modal-body{padding:var(--bar) 20px calc(26px + env(safe-area-inset-bottom,0px))}
+.modal-foot{padding:10px 20px calc(16px + env(safe-area-inset-bottom,0px))}
+.modal:has(.modal-foot:not([hidden]))>.modal-body{padding-bottom:22px}
+dialog.modal .close{width:44px;height:44px}
+dialog.modal h2{font-size:32px;margin-bottom:16px}
+}
+dialog.modal.dragging,dialog.modal.dragging::backdrop{transition:none}
+/* De un modal a otro: el fondo no parpadea, se entrega tal cual (dom.js pone la clase un instante). */
+dialog.modal.handoff::backdrop{transition:none}
+
+/* ---------- Selección ---------- */
+.modal-drawer>.modal-bar{position:relative;inset:auto;height:auto;align-items:flex-start;justify-content:space-between;gap:14px;padding:30px 18px 16px 34px;pointer-events:auto}
+.modal-drawer>.modal-body{padding:4px 34px 30px}
+.modal-drawer>.modal-foot{padding:14px 34px calc(22px + env(safe-area-inset-bottom,0px))}
+.modal-heading{min-width:0}
+.modal-heading .eyebrow{margin-bottom:8px}
+dialog.modal .modal-heading h2{font-size:38px;line-height:1;margin:0;padding:0}
+.bag-item{display:grid;grid-template-columns:64px minmax(0,1fr) auto;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #eadfce}
+.bag-thumb{display:grid;place-items:center;width:64px;height:64px;border-radius:26px 26px 12px 12px;overflow:hidden;background:#f0e5d6;color:var(--gold);font-size:20px}
+.bag-thumb i{font-style:normal}
+.bag-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.bag-info{min-width:0}
+.bag-item h3{font-size:21px;line-height:1.12;margin:0}
+.bag-info small{display:block;margin-top:4px;font-size:13px;line-height:1.35;color:var(--muted)}
+.bag-info .bag-unit{margin-top:2px;font-weight:600;color:var(--wine);font-variant-numeric:tabular-nums}
+.qty{gap:0;margin:0;padding:3px;border:1px solid #e3d3bd;border-radius:100px;background:#fffdf8}
+.qty button{width:38px;height:38px;border:0;border-radius:50%;background:transparent;font-size:18px;line-height:1}
+.qty span{min-width:24px;text-align:center;font-size:14px;font-weight:600}
+@media(hover:hover) and (pointer:fine){.qty button:hover{background:#f4e9da;color:var(--wine)}}
+.bag-total{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 12px;font-size:14px;color:var(--muted)}
+.bag-total strong{font:500 32px/1 'Cormorant Garamond',Georgia,serif;color:var(--wine)}
+.bag-total strong.quote{font-size:24px;font-style:italic}
+.foot-note{margin:10px 0 0;font-size:12px;line-height:1.5;color:var(--muted);text-align:center}
+.bag-empty{display:grid;justify-items:center;gap:10px;padding:46px 8px 30px;text-align:center}
+.bag-empty-seal{display:grid;place-items:center;width:84px;height:84px;margin-bottom:8px;border:1px solid #e3d3bd;border-radius:42px 42px 16px 16px;background:#f4e9da;color:var(--gold);font-size:26px}
+.bag-empty h3{font-size:30px;line-height:1.05}
+.bag-empty p{max-width:30ch;font-size:15px;line-height:1.6;color:var(--muted)}
+dialog.modal .bag-empty .button{width:auto;margin-top:14px}
+#bag-suggest{margin-bottom:6px}
+.modal-drawer .assurances{margin:22px 0 0}
+@media(max-width:760px){
+.modal-drawer>.modal-bar{padding:28px 10px 12px 20px}
+.modal-drawer>.modal-body{padding:2px 20px 22px}
+.modal-drawer>.modal-foot{padding:10px 20px calc(16px + env(safe-area-inset-bottom,0px))}
+dialog.modal .modal-heading h2{font-size:32px}
+.bag-item{grid-template-columns:56px minmax(0,1fr) auto;gap:12px}
+.bag-thumb{width:56px;height:56px;border-radius:22px 22px 10px 10px}
+.bag-item h3{font-size:19px}
+.qty button{width:40px;height:40px}
+.bag-total strong{font-size:29px}
+}
+
+/* ---------- Detalle del producto ---------- */
+dialog.modal-product>.modal-body{padding:0}
+/* Lo que sigue se insinúa con un fundido en vez de cortarse contra el borde. */
+.modal-product::after{content:'';position:absolute;inset:auto 0 0;z-index:3;height:30px;background:linear-gradient(to top,var(--cream) 15%,#fff9ef00);pointer-events:none}
+.detail-media{position:relative;padding:14px 14px 0}
+#product-detail .detail-photo{height:clamp(240px,36dvh,340px);margin:0;border-radius:150px 150px 22px 22px;background:#f0e5d6 center/cover no-repeat}
+.detail-body{padding:24px 40px 34px}
+.detail-top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:36px;margin-bottom:6px}
+.detail-body .eyebrow{margin:0}
+dialog.modal .detail-body h2{font-size:clamp(32px,4vw,46px);line-height:1.03;margin:0 0 8px;padding:0}
+.detail-price{margin:0 0 14px;font-size:17px;font-weight:600;color:var(--wine);font-variant-numeric:tabular-nums}
+.detail-price small{font-size:inherit;font-weight:500;color:var(--muted)}
+.detail-lead{font-size:15.5px;line-height:1.7;color:var(--muted)}
+.detail-body .muted{margin:20px 0 0;font-size:12.5px;line-height:1.6}
+.detail-media .gallery{position:absolute;left:50%;bottom:12px;translate:-50% 0;margin:0;padding:6px;gap:6px;border-radius:20px;background:#fff9efd9;box-shadow:0 8px 24px #361b2226}
+.detail-media .gallery button{width:52px;height:52px;border-radius:14px}
+.presentations li{transition:background-color .3s ease,box-shadow .3s ease}
+.fit-badge{display:none}
+.fit .fit-badge{display:inline-block}
+.presentations .add-row{width:auto;height:44px;padding:0 18px;border-radius:100px;background:var(--wine);color:var(--cream);font-size:13px;font-weight:600}
+.presentations .add-row:hover{background:#861239;color:var(--cream)}
+.presentations .add-plus{display:none}
+.presentations .add-text{display:inline}
+/* El contenido entra detrás de la foto, en cascada breve y una sola vez por producto. */
+.detail-body>*{animation:rise .5s var(--ease-out) both;animation-delay:calc(var(--k,0) * 40ms + 140ms)}
+.detail-body>:nth-child(2){--k:1}.detail-body>:nth-child(3){--k:2}.detail-body>:nth-child(4){--k:3}.detail-body>:nth-child(5){--k:4}.detail-body>:nth-child(n+6){--k:5}
+.detail-body>.presentations{animation:none}
+.presentations li{animation:rise .45s var(--ease-out) both;animation-delay:calc(var(--n,0) * 40ms + 280ms)}
+.presentations li:nth-child(2){--n:1}.presentations li:nth-child(3){--n:2}.presentations li:nth-child(4){--n:3}.presentations li:nth-child(5){--n:4}.presentations li:nth-child(n+6){--n:5}
+/* PC y pantallas apaisadas: foto a la izquierda, fija dentro de su arco; a la derecha se elige y se desplaza. */
+@media(min-width:960px),(min-width:761px) and (max-height:540px){
+dialog.modal-product{--h:min(86dvh,720px);width:min(1040px,calc(100% - 64px));height:var(--h);max-height:none}
+#product-detail{display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1fr);align-items:start}
+.detail-media{position:sticky;top:0;height:calc(var(--h) - 2px);padding:16px 0 16px 16px}
+#product-detail .detail-photo{height:100%;border-radius:230px 230px 26px 26px}
+.detail-body{padding:58px 48px 40px 44px}
+.modal-product>.modal-bar,.modal-product::after{left:48.5%}
+.detail-media .gallery{bottom:30px}
+}
+@media(min-width:761px) and (max-height:540px){
+dialog.modal-product{--h:calc(100dvh - 24px)}
+.detail-media{padding:12px 0 12px 12px}
+.detail-body{padding:50px 30px 26px 28px}
+}
+@media(max-width:760px){
+.detail-media{padding:0}
+#product-detail .detail-photo{height:min(40dvh,310px);border-radius:0}
+/* La ficha sube sobre la foto con su propia curva. */
+.detail-body{position:relative;margin-top:-26px;padding:24px 20px calc(28px + env(safe-area-inset-bottom,0px));border-radius:26px 26px 0 0;background:var(--cream)}
+.detail-media .gallery{bottom:38px}
+.presentations li{padding:12px 0;gap:10px}
+.guests{margin-top:16px}
+.guests button{min-height:44px;padding-inline:16px}
+.ask{display:flex;align-items:center;gap:6px;min-height:44px}
+/* Sobre una foto, el agarre es claro; al desplazar vuelve al tono de la barra. */
+.modal-product>.modal-bar::before,.concierge>.modal-bar::before{background:#fff9efe6;box-shadow:0 1px 6px #0000003d}
+.modal.scrolled>.modal-bar::before{background:#d3c0a6;box-shadow:none}
+}
+
+@media(max-width:360px){
+.presentations .add-row{padding:0 13px}
+.presentation-price{font-size:15px}
+}
+
+/* ---------- Entrega: recoger o domicilio ---------- */
+.segmented{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:0 0 10px;padding:4px;border:1px solid #e6d4bd;border-radius:100px;background:#f4e9da}
+.segmented label{position:relative;margin:0}
+.segmented input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer}
+.segmented span{display:grid;place-items:center;min-height:44px;border-radius:100px;font-size:14px;font-weight:500;color:var(--dark);transition:background-color .25s var(--ease-out),color .25s var(--ease-out),box-shadow .25s ease}
+.segmented input:checked+span{background:var(--wine);color:var(--cream);box-shadow:0 6px 16px #650d2826}
+.segmented input:focus-visible+span{outline:3px solid var(--gold);outline-offset:3px}
+.delivery-hint{min-height:20px;margin:0 0 18px;font-size:13px;line-height:1.5;color:var(--muted)}
+#delivery-address:not([hidden]){animation:rise .4s var(--ease-out)}
+.optional{float:right;font-size:12px;font-weight:400;color:var(--muted)}
+#delivery-form .muted{margin:4px 0 0}
+#delivery-dialog>.modal-body{padding-bottom:18px}
+dialog.modal .modal-foot .plain-link{margin-top:12px}
+
+/* ---------- Eventos y empresas ---------- */
+.corp-intro{margin:-6px 0 8px;font-size:15px;line-height:1.6;color:var(--muted)}
+.corp-switch{margin:0 0 22px;font-size:13px;color:var(--muted)}
+.corp-switch button{padding:0;border:0;background:none;color:var(--wine);font:inherit;font-weight:500;text-decoration:underline;cursor:pointer}
+.corp-group{min-width:0;margin:0 0 24px;padding:0;border:0}
+.corp-group legend{display:flex;align-items:center;gap:10px;width:100%;margin:0 0 12px;padding:0;font:500 25px/1.1 'Cormorant Garamond',Georgia,serif;color:var(--dark)}
+.corp-group legend b{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:50%;background:var(--wine);color:var(--cream);font:600 13px/1 'DM Sans',sans-serif}
+/* Pasos cortos, justo donde hay que actuar: un número y una orden de pocas palabras */
+.corp-step{display:flex;align-items:center;gap:9px;flex-basis:100%;margin:0;font-size:14px;font-weight:600;line-height:1.3;color:var(--wine)}
+.corp-step b{flex:none;width:10px;height:10px;border-radius:50%;background:var(--gold)}
+.corp-step-first{margin:0 0 10px}
+.corp-head{display:flex;justify-content:space-between;gap:12px;padding:6px 0 4px;font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+.corp-head span:last-child{width:126px;text-align:center}
+/* Marca dibujada: un aro que se llena y muestra el visto. Dice «elegido» sin depender del color. */
+.tick{position:relative;flex:none;display:inline-block;width:1em;height:1em;font-size:18px;border:1.5px solid #cdb596;border-radius:50%;background:transparent;transition:background-color .2s ease,border-color .2s ease}
+.tick::after{content:'';position:absolute;left:.32em;top:.14em;width:.24em;height:.48em;border:solid var(--tick-mark,var(--cream));border-width:0 .1em .1em 0;rotate:45deg;scale:0;transition:scale .28s cubic-bezier(.34,1.5,.64,1)}
+/* Servicio: al tener cantidad se resalta entero y su aro se marca */
+.corp-service{margin-inline:-12px;padding-inline:12px;border-radius:0;box-shadow:inset 0 -1px 0 #eadfce;transition:background-color .25s ease,box-shadow .25s ease}
+.corp-service.on{border-radius:18px;background:#f8efe1;box-shadow:inset 0 0 0 1.5px #d6b384}
+.corp-service.on+.corp-service.on{margin-top:8px}
+.corp-row{display:flex;align-items:center;gap:12px;padding:10px 0}
+.corp-state{font-size:24px}
+.corp-service.on .corp-state{border-color:var(--wine);background:var(--wine)}
+.corp-service.on .corp-state::after{scale:1}
+dialog.modal .corp-name{flex:1;min-width:0;margin:0;font-size:16px;font-weight:500;line-height:1.25;cursor:pointer;transition:color .2s ease}
+.corp-service.on .corp-name{color:var(--wine);font-weight:600}
+.corp-stepper{display:flex;align-items:center;flex:none;padding:3px;border:1px solid #dfcdb9;border-radius:100px;background:#fffdf9;transition:border-color .2s ease}
+.corp-stepper:focus-within{border-color:var(--gold)}
+.corp-service.on .corp-stepper{border-color:var(--wine)}
+.corp-stepper button{display:grid;place-items:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--dark);font-size:20px;line-height:1;cursor:pointer;transition:background-color .2s ease,transform 160ms var(--ease-out)}
+.corp-stepper button:active{transform:scale(.92)}
+@media(hover:hover) and (pointer:fine){.corp-stepper button:hover{background:#f4e9da;color:var(--wine)}}
+dialog.modal .corp-stepper input{width:58px;margin:0;padding:8px 0;border:0;border-radius:0;background:transparent;text-align:center;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;-moz-appearance:textfield;appearance:textfield}
+.corp-stepper input::-webkit-outer-spin-button,.corp-stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.corp-stepper input:focus{outline:none}
+/* Opciones: cada una lleva su aro; marcada se llena de vino y muestra el visto */
+.corp-options{position:relative;display:flex;flex-wrap:wrap;gap:8px;padding:4px 0 14px}
+.corp-options:not([hidden]){animation:rise .35s var(--ease-out)}
+/* Falta el producto: el paso 2 late hasta que se elige; elegido, queda en calma */
+.corp-service.need .corp-step b{animation:beat 1.3s ease-in-out infinite}
+.corp-service.on:not(.need) .corp-step{color:var(--muted);font-weight:500}
+.corp-service.on:not(.need) .corp-step b{background:var(--wine)}
+@keyframes beat{0%,100%{scale:1;opacity:1}50%{scale:1.7;opacity:.55}}
+.corp-options .corp-advice{border-style:dashed;border-color:var(--gold)}
+.corp-options button{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:8px 16px 8px 10px;border:1px solid #dac4ae;border-radius:100px;background:#fffdf9;font-size:13px;text-align:left;cursor:pointer;transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform 160ms var(--ease-out)}
+.corp-options button:active{transform:scale(.97)}
+.corp-options button[aria-pressed=true]{--tick-mark:var(--wine);background:var(--wine);border-color:var(--wine);color:var(--cream);font-weight:500}
+.corp-options button[aria-pressed=true] .tick{border-color:var(--cream);background:var(--cream)}
+.corp-options button[aria-pressed=true] .tick::after{scale:1}
+.corp-picked{flex-basis:100%;margin:2px 0 0;font-size:13px;line-height:1.45;color:var(--muted)}
+.corp-picked.some{color:var(--wine);font-weight:500}
+/* Resumen vivo junto al botón: lo que se va a cotizar, antes de continuar */
+.corp-recap{margin:0 0 10px;padding:9px 14px;border-radius:14px;font-size:13px;line-height:1.45;text-align:center;font-weight:600;color:var(--dark);background:#f4e9da;transition:background-color .25s ease,color .25s ease}
+.corp-recap.warn{background:#fbe9e5;color:#8f1f24}
+.corp-recap.ready{background:#f1ead6;color:var(--wine)}
+.form-error{margin:10px 0 0;font-size:13px;font-weight:600;color:#a3262b}
+/* Dato que falta: se marca en su sitio y dice qué hacer */
+dialog.modal :is(input,select,textarea).invalid{border-color:#a3262b;box-shadow:0 0 0 3px #a3262b1f}
+.field-error{display:block;margin-top:6px;font-size:13px;font-weight:600;line-height:1.35;color:#a3262b}
+/* Presupuesto en pesos, con su base al lado */
+.money{display:flex;gap:8px;margin-top:6px}
+dialog.modal .money input{flex:1;min-width:0;margin:0;font-variant-numeric:tabular-nums}
+dialog.modal .money select{flex:none;width:auto;margin:0;padding-inline:12px 8px}
+/* Autorización que falta al enviar */
+.consent-line{transition:background-color .25s ease,box-shadow .25s ease}
+.concierge-send .consent-line.invalid{margin-inline:-8px;padding:10px 8px;border-radius:14px;background:#fbe9e5;box-shadow:inset 0 0 0 1.5px #a3262b}
+.consent-error{margin:0 0 12px;font-size:13px;font-weight:600;line-height:1.4;color:#a3262b}
+.consent-error[hidden]{display:none}
+#corporate-dialog>.modal-body{padding-bottom:18px}
+@media(min-width:761px){dialog.modal.modal-wide{width:min(720px,calc(100% - 48px))}}
+@media(max-width:760px){.corp-stepper button{width:40px;height:40px}dialog.modal .corp-stepper input{width:50px}.corp-options button{min-height:44px}}
+@media(prefers-reduced-motion:reduce){.tick::after{transition:none}.corp-service.need .corp-step b{animation:none}}
+
+/* ---------- Gracias: lo que se encuentra al volver de WhatsApp ---------- */
+.thanks{display:grid;justify-items:center;text-align:center}
+.thanks .bag-empty-seal{margin-bottom:18px}
+dialog.modal .thanks h2{margin-bottom:14px;padding:0}
+.thanks>p:not(.eyebrow){max-width:40ch;margin:0 0 24px;font-size:15px;line-height:1.65;color:var(--muted)}
+dialog.modal .thanks .button{width:100%;max-width:340px;margin:0}
+.thanks .button b{font-weight:inherit}
+.thanks .plain-link{margin-top:16px}
+
+/* ---------- Asesoría ---------- */
+dialog.modal.concierge>.modal-body{padding:0}
+/* El mensaje crece con su contenido (donde el navegador lo permite): la cotización se lee entera, sin una ventanita con scroll. */
+.concierge-content textarea{field-sizing:content;max-height:min(60dvh,520px)}
+/* Enviar siempre a la vista: el mensaje puede ser largo, pero el consentimiento y el botón no se esconden. */
+.concierge-send{position:sticky;bottom:0;z-index:2;margin:0 -14px;padding:12px 14px 14px;background:var(--cream)}
+.concierge-send::before{content:'';position:absolute;inset:auto 0 100%;height:18px;background:linear-gradient(to top,var(--cream),#fff9ef00);pointer-events:none}
+.concierge-send .consent-line{margin:0 0 12px}
+dialog.modal .concierge-send .button{margin:0}
+.concierge-send #copy-status:empty{display:none}
+.concierge-send #copy-status{margin:10px 0 0}
+.concierge-content .concierge-footnote{margin-top:4px}
+@media(min-width:761px){
+.concierge>.modal-body{display:grid;grid-template-columns:minmax(0,.83fr) minmax(0,1.17fr)}
+.concierge .concierge-portrait{min-height:560px}
+.concierge .concierge-content{padding:58px 40px 32px}
+.concierge>.modal-bar{left:41.6%}
+}
+@media(max-width:760px){
+.concierge .concierge-portrait{height:200px;min-height:200px}
+.concierge .concierge-content{position:relative;margin-top:-26px;padding:26px 22px calc(26px + env(safe-area-inset-bottom,0px));border-radius:26px 26px 0 0;background:var(--cream)}
+.concierge .portrait-caption{bottom:42px;left:22px}
+/* En la hoja la foto es baja: la frase larga taparía el rostro; queda solo la firma. */
+.concierge .portrait-caption>p{display:none}
+.concierge .concierge-portrait>img{object-position:50% 43%}
+}
+
+/* ---------- Formularios, textos legales y preferencias ---------- */
+.form-row{gap:0 15px}
+.preference-row input[role=switch]{-webkit-appearance:none;appearance:none;position:relative;display:block;flex:none;width:50px;height:30px;margin:0;padding:0;border:0;border-radius:100px;background:#d9c7ae;cursor:pointer;transition:background-color .2s ease}
+.preference-row input[role=switch]::before{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px #361b2238;transition:translate .25s var(--ease-out)}
+.preference-row input[role=switch]:checked{background:var(--wine)}
+.preference-row input[role=switch]:checked::before{translate:20px 0}
+dialog.modal.legal-dialog h2{font-size:clamp(31px,4vw,44px);line-height:1.06;margin-bottom:22px;padding:0}
+.legal-dialog>.modal-body{padding-bottom:20px}
+.legal-updated{margin-bottom:6px;font-size:13px;color:var(--muted)}
+.legal-dialog p button{padding:0;border:0;background:none;color:var(--wine);font:inherit;text-decoration:underline;cursor:pointer}
+
+/* ---------- Reducción de movimiento: los modales solo se funden ---------- */
+@media(prefers-reduced-motion:reduce){
+dialog.modal,dialog.modal[open]{translate:none!important;scale:none!important;transition:opacity .2s ease,overlay .2s allow-discrete,display .2s allow-discrete!important}
+dialog.modal{opacity:0}
+dialog.modal[open]{opacity:1}
+@starting-style{dialog.modal[open]{opacity:0}}
+.detail-body>*,.presentations li{animation:none}
+dialog.modal .close::before,dialog.modal .close::after{transition:none}
+}

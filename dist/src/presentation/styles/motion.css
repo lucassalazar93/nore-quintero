@@ -1,0 +1,140 @@
+/*
+ * Movimiento y acabado. Va después de shop.css y antes de modal.css (que reúne todo lo de los diálogos).
+ * Contenido visible por defecto. Las clases `js`, `motion-ready`, `motion-failed` y `hero-go` las pone index.html / motion.js.
+ * Solo transform, opacity, clip-path y filter acotado. Propiedades individuales (translate, scale, rotate) para
+ * no pisar los `transform` de hover que ya existen.
+ */
+:root{--ease-out:cubic-bezier(.23,1,.32,1);--ease-in-out:cubic-bezier(.77,0,.175,1);--ease-drawer:cubic-bezier(.32,.72,0,1);--ease-hero:cubic-bezier(.16,1,.3,1)}
+
+/* ---------- Superficies del navegador que también llevan el diseño ---------- */
+html{scrollbar-gutter:stable;scrollbar-color:#c9b498 transparent;-webkit-text-size-adjust:100%}
+::selection{background:#650d2824;color:var(--dark)}
+input,textarea,select{caret-color:var(--wine);accent-color:var(--wine)}
+h1,h2,h3{text-wrap:balance}
+p{text-wrap:pretty}
+.price,.presentation-price,#count,#carousel-position,.bag-total,.qty span{font-variant-numeric:tabular-nums}
+body:has(dialog[open]){overflow:hidden}
+.scroll-sentinel{position:absolute;top:0;left:0;width:1px;height:120px;pointer-events:none;visibility:hidden}
+button,.tag,.avatar-button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+
+/* ---------- Presión: la interfaz responde al tocar, no al soltar ---------- */
+.bag,.add,.close,.menu-toggle,.qty button,.carousel-navigation button,.quick-choices button,.cookie-actions button,.filter-track button,.avatar-button,.detail-link,.tier-add,.moments-nav>button,.guests button,.suggest-item,.bag-bar-btn,.moment-more{transition:transform 160ms var(--ease-out),background-color .2s ease,color .2s ease,border-color .2s ease,box-shadow .2s ease}
+.button:active,.bag:active,.add:active,.close:active,.menu-toggle:active,.qty button:active,.carousel-navigation button:not(:disabled):active,.quick-choices button:active,.cookie-actions button:active,.filter-track button:active,.avatar-button:active,.detail-link:active,.tier-add:active,.moments-nav>button:not(:disabled):active,.guests button:active,.suggest-item:active,.bag-bar-btn:active{transform:scale(.97);transition-duration:100ms}
+@media(hover:none){.avatar-button:hover{transform:none}.add:hover{background:#f4e9da;color:inherit}.product:hover img{transform:none}}
+
+/* ---------- Encabezado: material translúcido y un hilo que avanza con la lectura ---------- */
+header{transition:background-color .3s ease,box-shadow .3s ease}
+.is-scrolled header{background:#fff9eff0;backdrop-filter:blur(18px) saturate(1.4)}
+header::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--wine));transform:scaleX(0);transform-origin:left;pointer-events:none}
+@supports(animation-timeline:scroll()){header::after{animation:thread linear both;animation-timeline:scroll(root)}}
+@keyframes thread{to{transform:scaleX(1)}}
+nav a[aria-current]{color:var(--wine)}
+nav a[aria-current]:after{width:100%}
+.avatar-button>span{transition:opacity .3s var(--ease-out)}
+@keyframes rise{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 0}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media(max-width:760px){header nav.open a{animation:rise .38s var(--ease-out) both}header nav.open a:nth-child(2){animation-delay:45ms}header nav.open a:nth-child(3){animation-delay:90ms}}
+
+/* ---------- Portada: una sola secuencia ensayada, una vez por visita ---------- */
+/* El texto entra en cuanto carga la página (hero-go); la foto, cuando llega (hero-img-go). `backwards` libera las propiedades al terminar. */
+.hero h1 .line{display:block;overflow:hidden;padding:.02em 0 .16em;margin-bottom:-.16em}
+.hero h1 .line>span{display:block}
+.js:not(.hero-go):not(.motion-failed) :is(.hero .eyebrow,.hero .line>span,.hero .intro,.hero .button,.hero .text-link,.hero .hero-note){opacity:0}
+.js:not(.hero-img-go):not(.motion-failed) :is(.hero-visual>img,.image-label,.round-seal){opacity:0}
+.js:not(.hero-img-go):not(.motion-failed) .hero-visual:after{opacity:0}
+.hero-go .hero .eyebrow{animation:rise .7s var(--ease-hero) .02s backwards}
+.hero-go .hero .line>span{animation:line-up .9s var(--ease-hero) backwards;animation-delay:calc(.06s + var(--l,0) * .09s)}
+.hero h1 .line:nth-child(2)>span{--l:1}
+.hero h1 .line:nth-child(3)>span{--l:2}
+.hero-go .hero .intro{animation:rise .8s var(--ease-hero) .36s backwards}
+.hero-go .hero .button{animation:rise .8s var(--ease-hero) .46s backwards}
+.hero-go .hero .text-link{animation:rise .8s var(--ease-hero) .54s backwards}
+.hero-go .hero .hero-note{animation:rise .8s var(--ease-hero) .62s backwards}
+.hero-img-go .hero-visual>img{animation:arch-rise 1.2s var(--ease-hero) .05s backwards}
+.hero-img-go .hero-visual:after{animation:fade .8s ease .6s backwards}
+.hero-img-go .image-label{animation:rise .8s var(--ease-hero) .7s backwards}
+.hero-img-go .round-seal{animation:stamp .9s cubic-bezier(.34,1.3,.64,1) .8s backwards}
+@keyframes line-up{from{translate:0 112%}to{translate:0 0}}
+@keyframes arch-rise{0%{opacity:0;clip-path:inset(34% 16% 0 16%);scale:1.14}30%{opacity:1}100%{opacity:1;clip-path:inset(0 0 0 0);scale:1}}
+@keyframes stamp{0%{opacity:0;scale:1.55;rotate:-38deg}35%{opacity:1}100%{opacity:1;scale:1;rotate:0deg}}
+@media(min-width:761px){
+@supports(animation-timeline:scroll()){
+.hero-visual{animation:hero-drift linear both;animation-timeline:scroll(root);animation-range:0 85vh}
+.hero-copy{animation:copy-drift linear both;animation-timeline:scroll(root);animation-range:0 85vh}
+}
+}
+@keyframes hero-drift{to{translate:0 -44px}}
+@keyframes copy-drift{to{translate:0 24px;opacity:.5}}
+
+/* ---------- Revelado por scroll ---------- */
+.product{animation:none}
+.js:not(.motion-failed) [data-rv]{opacity:0;translate:0 34px;transition:opacity .95s var(--ease-hero) var(--rv-delay,0ms),translate .95s var(--ease-hero) var(--rv-delay,0ms)}
+.js:not(.motion-failed) [data-rv].in{opacity:1;translate:0 0}
+.js:not(.motion-failed) [data-rv="card"]{translate:0 40px;scale:.97;transform-origin:50% 100%;transition:opacity .95s var(--ease-hero) var(--rv-delay,0ms),translate .95s var(--ease-hero) var(--rv-delay,0ms),scale .95s var(--ease-hero) var(--rv-delay,0ms)}
+.js:not(.motion-failed) [data-rv="card"].in{scale:1}
+.js:not(.motion-failed) [data-rv="stagger"]{opacity:1;translate:none;transition:none}
+.js:not(.motion-failed) [data-rv="stagger"]>*{opacity:0;translate:0 22px;transition:opacity .85s var(--ease-hero) calc(var(--i,0) * 55ms),translate .85s var(--ease-hero) calc(var(--i,0) * 55ms)}
+.js:not(.motion-failed) [data-rv="stagger"].in>*{opacity:1;translate:0 0}
+.js:not(.motion-failed) [data-rv] h2{filter:blur(8px);transition:filter 1.1s var(--ease-hero) var(--rv-delay,0ms)}
+.js:not(.motion-failed) [data-rv].in h2{filter:blur(0)}
+/* La foto se asienta dentro de su marco: el marco ya tiene la forma de arco. */
+.js:not(.motion-failed) [data-rv="photo"] .food-photo img,.js:not(.motion-failed) [data-rv="card"] .product-image img{scale:1.14;transition:scale 1.6s var(--ease-hero) var(--rv-delay,0ms)}
+.js:not(.motion-failed) [data-rv="photo"].in .food-photo img,.js:not(.motion-failed) [data-rv="card"].in .product-image img{scale:1}
+.motion-failed [data-rv],.motion-failed [data-rv]>*{opacity:1!important;translate:none!important;scale:none!important;filter:none!important}
+@media(max-width:760px){
+/* En móvil el revelado es breve y sin desenfoque: nadie debe esperar para ver un producto. */
+.js:not(.motion-failed) [data-rv],.js:not(.motion-failed) [data-rv="card"]{translate:0 16px;scale:1;transition:opacity .5s var(--ease-out) var(--rv-delay,0ms),translate .5s var(--ease-out) var(--rv-delay,0ms)}
+.js:not(.motion-failed) [data-rv] h2{filter:none;transition:none}
+.js:not(.motion-failed) [data-rv="photo"] .food-photo img,.js:not(.motion-failed) [data-rv="card"] .product-image img{scale:1;transition:none}
+}
+@supports(animation-timeline:view()){
+.celebrate-photo .food-photo img{animation:drift linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+}
+@keyframes drift{from{translate:0 -4%}to{translate:0 4%}}
+.celebrate-photo .food-photo img{scale:1.1}
+
+/* ---------- Filtros: la lente desliza el color de un botón al siguiente ---------- */
+.filter-track{position:relative;display:flex;gap:8px;flex:none}
+.filter-track button[aria-pressed=true]{background:#ffffff77;color:inherit;border-color:#decfbc80}
+@media(hover:hover) and (pointer:fine){.filter-track button:not([aria-pressed=true]):hover{background:#f4e9da;color:var(--wine);border-color:#d3bca5}}
+@media(hover:none){.filter-track button:hover{background:#ffffff77;color:inherit;border-color:#decfbc80}}
+.filter-lens{position:absolute;inset:0;display:flex;gap:8px;pointer-events:none;clip-path:inset(0 100% 0 0 round 999px);transition:clip-path 420ms var(--ease-in-out)}
+.filter-lens span{flex:none;display:block;white-space:nowrap;font-size:14px;line-height:1.6;background:var(--wine);color:var(--cream);border:1px solid var(--wine);border-radius:30px;padding:11px 20px}
+@media(max-width:600px){.filter-lens span{font-size:13px;padding:9px 15px}}
+
+/* ---------- Titulares partidos por palabra (spring.js) ---------- */
+.split-ready,.js:not(.motion-failed) [data-rv] h2.split-ready{filter:none;transition:none}
+.split-ready .w{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .12em .2em .04em;margin:0 -.12em -.2em -.04em}
+.split-ready .wi{display:inline-block;transform:translateY(112%)}
+
+/* ---------- Colección: el filtro reordena las tarjetas con transición de vista ---------- */
+::view-transition-group(*.card){animation-duration:560ms;animation-timing-function:var(--ease-out)}
+::view-transition-old(*.card){animation-duration:260ms}
+::view-transition-new(*.card){animation-duration:460ms;animation-delay:90ms}
+::view-transition-old(root),::view-transition-new(root){animation-duration:300ms}
+
+/* ---------- Fotos: esperan invisibles y se funden al llegar (motion.js pone y quita la clase) ---------- */
+img.img-wait{opacity:0}
+
+/* ---------- Agregar: el botón confirma con una marca breve ---------- */
+.add.added,.add.added:hover,#products .product .add.added{background:var(--wine);color:var(--cream);font-size:0}
+.add.added::after{content:'✓';font-size:17px;line-height:1;animation:pop-in .32s var(--ease-out)}
+@keyframes pop-in{from{opacity:0;scale:.5}to{opacity:1;scale:1}}
+
+/* ---------- Vuelo de fotos y miniaturas (elementos en capa superior, creados por motion.js) ---------- */
+.flight{position:fixed;inset:auto;margin:0;padding:0;border:0;overflow:hidden;background:transparent;pointer-events:none;box-shadow:0 24px 54px #361b2230}
+.flight img{display:block;width:100%;height:100%;object-fit:cover}
+.flight-dot{overflow:visible;border-radius:50%;box-shadow:none}
+.flight-dot-body{width:100%;height:100%;border-radius:50%;border:3px solid var(--cream);background:var(--wine) center/cover no-repeat;box-shadow:0 12px 28px #361b2244}
+
+/* ---------- Zonas seguras del teléfono ---------- */
+.avatar-button{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+.cookie-banner{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+@media(max-width:600px){.avatar-button{bottom:calc(14px + env(safe-area-inset-bottom,0px))}.cookie-banner{bottom:calc(12px + env(safe-area-inset-bottom,0px))}}
+
+/* ---------- Reducción de movimiento: fundidos suaves, sin desplazamientos ---------- */
+@media(prefers-reduced-motion:reduce){
+.js [data-rv],.js [data-rv]>*{translate:none!important;scale:none!important;filter:none!important;transition:opacity .4s ease!important}
+.js [data-rv] img,.js [data-rv] h2{scale:none!important;filter:none!important}
+.celebrate-photo .food-photo img{scale:1!important}
+}

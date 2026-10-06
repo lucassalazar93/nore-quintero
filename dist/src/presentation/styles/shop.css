@@ -1,0 +1,119 @@
+/*
+ * Tienda: móvil primero. Va después de funnel.css y antes de motion.css.
+ * Decide cómo se ve la compra en pantallas pequeñas: encabezado de una fila, portada corta, filtros fijos,
+ * rejilla compacta y la selección siempre a un toque. Las hojas inferiores viven en modal.css.
+ * Los selectores con #products ganan a las reglas heredadas de boutique/responsive sin usar !important.
+ */
+
+/* ---------- Tarjetas compactas (tabletas y móviles) ---------- */
+@media(max-width:1100px){
+#products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 14px;align-items:stretch}
+#products .product,#products .product:nth-child(n){position:relative;display:flex;flex-direction:column;margin:0;padding:7px 7px 14px;border-radius:84px 84px 24px 24px;background:#fffdf78a;border:1px solid #ecdfcf;box-shadow:var(--soft-shadow);cursor:pointer}
+#products .product:hover{transform:none}
+#products .product-image,#products .product:nth-child(n) .product-image{aspect-ratio:1;border-radius:78px 78px 18px 18px}
+#products .product-image .tag{display:none}
+#products .product-info{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto 1fr;gap:6px 8px;flex:1;padding:12px 8px 0}
+#products .product-top{display:contents}
+#products .product h3{grid-column:1/-1;margin:0;padding:0;font-size:21px;line-height:1.12;overflow-wrap:break-word}
+#products .product p:not(.price){display:none}
+#products .product .price{grid-column:1;grid-row:2;align-self:end;white-space:nowrap;margin:0;padding:0;min-height:0;font-size:15px;line-height:1.15}
+#products .product .price small{display:block;font-size:11px;font-weight:500;letter-spacing:.3px;color:var(--muted)}
+#products .detail-link{display:none}
+.hero .intro br{display:none}
+#products .product .add{grid-column:2;grid-row:2;position:static;align-self:end;width:44px;height:44px;margin:0;font-size:23px}
+}
+
+/* ---------- Móvil ---------- */
+@media(max-width:760px){
+html{scroll-padding-top:70px}
+.topbar{padding:7px 12px;font-size:10.5px;letter-spacing:.7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar span{margin:0 8px}
+
+/* Encabezado: una sola fila de 60 px */
+header{flex-wrap:nowrap;gap:8px;min-height:60px;padding:8px 14px}
+.brand{gap:8px;min-width:0}
+.brand img{width:40px;height:40px;flex:none}
+.brand>span{display:block;font-size:21px;white-space:nowrap}
+.brand small{display:none}
+.bag{margin-left:auto;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 8px 6px 14px;font-size:13px;white-space:nowrap}
+.bag span{margin-left:0}
+.menu-toggle{display:grid;place-items:center;flex:none;width:44px;height:44px;border:1px solid #dac4ae;border-radius:50%;background:none;font-size:22px}
+/* Menú: panel opaco que baja con transición; cerrado no recibe foco ni toques */
+header nav{display:flex;visibility:hidden;opacity:0;translate:0 -8px;pointer-events:none;position:absolute;top:100%;left:0;right:0;order:0;width:auto;flex-direction:column;align-items:stretch;gap:0;padding:8px 14px 14px;background:var(--cream);border-top:1px solid #efe3d2;border-bottom:1px solid #eaddca;border-radius:0 0 26px 26px;box-shadow:0 26px 40px #361b221f;transition:opacity .18s var(--ease-out),translate .18s var(--ease-out),visibility 0s .18s}
+header nav.open{display:flex;visibility:visible;opacity:1;translate:0 0;pointer-events:auto;transition:opacity .28s var(--ease-out),translate .28s var(--ease-out),visibility 0s}
+header nav a{padding:15px 10px;font-size:17px;border-radius:12px}
+header nav a:after{display:none}
+
+/* Portada corta: el primer producto asoma en la primera pantalla */
+.hero{grid-template-columns:1fr;gap:14px;min-height:0;padding:18px 20px 6px}
+.hero-copy{text-align:left}
+.hero .eyebrow,.hero-note,.image-label{display:none}
+.hero h1{font-size:clamp(38px,11.4vw,50px);line-height:1.02;letter-spacing:-1px}
+.hero .intro{max-width:32ch;margin:12px 0 16px;font-size:15px;line-height:1.55}
+.hero .intro br{display:none}
+.hero .button{width:100%;min-height:52px}
+.hero .text-link{margin:12px 0 0;font-size:14px}
+.hero-visual{width:100%;max-width:none;height:200px;margin:6px 0 0}
+.hero-visual>img,.hero-visual:after{border-radius:110px 110px 20px 20px}
+.round-seal{left:6px;top:-12px;width:66px;height:66px;padding:9px 4px;border-width:4px;font-size:6.5px}
+.round-seal b{font-size:15px}
+
+/* Colección */
+.section.collection{padding:14px 16px 36px}
+.filters{position:sticky;top:59px;z-index:8;max-width:none;margin:0 -16px 6px;padding:10px 16px;scroll-padding-inline:16px;background:#fff9efee;backdrop-filter:blur(12px);border-bottom:1px solid #eaddca80}
+.catalog-status{margin:8px 0 12px;font-size:12px}
+#products{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 10px}
+#products .product,#products .product:nth-child(n){padding:6px 6px 12px;border-radius:70px 70px 20px 20px}
+#products .product-image,#products .product:nth-child(n) .product-image{border-radius:64px 64px 14px 14px}
+#products .product h3{font-size:19px}
+.catalog-note{margin-top:18px;font-size:11px}
+
+/* Secciones de apoyo más compactas */
+.section{padding:44px 20px}
+.celebrate{margin:0 12px;padding:30px 20px}
+.story{padding-block:44px}
+.closing{margin:0 12px;padding:40px 7%}
+.location{padding-block:44px}
+.new-footer{padding:30px 7% 110px!important}
+
+/* Chat y avisos */
+.avatar-button{right:12px}
+.avatar-button>span{display:none}
+.avatar-button>div{width:52px;height:52px;border-width:2px}
+.avatar-button b{width:20px;height:20px;font-size:13px;line-height:17px}
+.cookie-banner{left:10px;right:10px;width:auto;padding:14px 16px;border-radius:20px}
+.cookie-banner .eyebrow{display:none}
+.cookie-banner h3{font-size:22px}
+.cookie-banner p{margin:6px 0 10px;font-size:12px;line-height:1.5}
+.cookie-actions button{min-height:40px;padding:6px 12px;font-size:12px}
+.bag-bar{left:12px;bottom:calc(14px + var(--lift,0px) + env(safe-area-inset-bottom,0px));width:calc(100% - 84px);translate:0 170%}
+.bag-bar.on{translate:0 0}
+.bag-bar-cta{display:none}
+.bag-bar-btn:after{content:'Ver';margin-left:auto;padding-left:10px;font-size:13px;font-weight:600}
+
+/* Sin flechas en el teléfono: cada botón lleva solo su texto, centrado */
+.ar{display:none}
+.button,.hero .button,.jcopy .button{justify-content:center;gap:10px;text-align:center}
+
+}
+.add-text{display:none}
+
+/* Escritorio: encabezado más bajo, para que el catálogo gane espacio */
+@media(min-width:761px){
+header{padding-block:8px}
+.brand img{width:56px;height:56px}
+.section.collection{padding-top:64px}
+}
+
+/* Teléfonos: el escudo del logo ya dice el nombre; el espacio es para la selección */
+@media(max-width:430px){.brand>span{display:none}.brand img{width:46px;height:46px}}
+
+/* Pantallas muy pequeñas */
+@media(max-width:360px){
+.brand>span{font-size:19px}
+.bag{font-size:12px;padding:6px 10px}
+.hero h1{font-size:36px}
+#products h3{font-size:17px}
+#products .product .price{font-size:14px}
+#products .product .add{width:40px;height:40px;font-size:21px}
+}
