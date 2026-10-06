@@ -1,1 +1,1 @@
-export const siteConfig = Object.freeze({whatsappNumber: '573507881893', email: 'sabornorequintero1419@gmail.com', privacyKey: 'nore-privacy-v1', favoritesKey: 'nore-favorites-v1', privacyRetentionDays: 180});
+export const siteConfig = Object.freeze({url: 'https://nore-quintero.vercel.app', whatsappNumber: '573507881893', email: 'sabornorequintero1419@gmail.com', privacyKey: 'nore-privacy-v1', favoritesKey: 'nore-favorites-v1', privacyRetentionDays: 180});

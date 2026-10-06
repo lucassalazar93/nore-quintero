@@ -57,5 +57,13 @@ console.log(`Embudo: ${calendar.length} fechas especiales, combinaciones por sec
 const page=readFileSync(resolve(root,'index.html'),'utf8');
 if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(siteConfig.email))throw Error('Correo de la tienda inválido en config/site.js');
 if(!page.includes('mailto:'+siteConfig.email))throw Error('El correo del pie de página no coincide con config/site.js');
+// Vista previa al compartir: dirección absoluta del sitio publicado e imagen presente y liviana.
+const share=(page.match(/property="og:image" content="([^"]+)"/)||[])[1];
+if(!/^https:\/\/[^/]+$/.test(siteConfig.url))throw Error('`url` en config/site.js debe ser la dirección pública, con https y sin barra final');
+if(!share||!share.startsWith(siteConfig.url+'/'))throw Error('og:image debe ser una dirección absoluta que empiece por '+siteConfig.url);
+for(const tag of ['rel="canonical" href="','property="og:url" content="'])if(!page.includes(tag+siteConfig.url+'/"'))throw Error('La dirección del sitio en index.html no coincide con config/site.js: '+tag);
+const shareFile=resolve(root,share.slice(siteConfig.url.length+1));
+if(!existsSync(shareFile))throw Error('Falta la imagen para compartir: '+share);
+if(readFileSync(shareFile).length>300*1024)throw Error('La imagen para compartir pesa más de 300 KB: WhatsApp puede no mostrarla');
 const pending=products.filter(p=>!p.image).length,unpriced=products.filter(p=>!p.presentations.length).length;
 console.log(`Publicable como sitio estático. Pendientes de contenido: ${pending} fotos de catálogo; ${unpriced} productos sin precio; WhatsApp ${siteConfig.whatsappNumber?'configurado':'sin configurar'}. Revisar LISTO-PARA-PUBLICAR.md.`);
