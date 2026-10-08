@@ -53,8 +53,93 @@
     <link rel="stylesheet" href="src/presentation/styles/shop.css" />
     <link rel="stylesheet" href="src/presentation/styles/motion.css" />
     <link rel="stylesheet" href="src/presentation/styles/modal.css" />
+    <link rel="stylesheet" href="src/presentation/styles/splash.css" />
   </head>
   <body>
+    <!-- Pantalla de entrada: decorativa. Estilos en styles/splash.css; el guion va aquí mismo para no depender de los módulos. -->
+    <div class="splash" id="splash" aria-hidden="true">
+      <div class="splash-curtain"></div>
+      <div class="splash-stage">
+        <div class="splash-seal">
+          <span class="splash-halo"></span>
+          <svg class="splash-ring" viewBox="0 0 100 100" focusable="false">
+            <defs>
+              <linearGradient id="splash-gold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#edd394" />
+                <stop offset=".5" stop-color="#b58a39" />
+                <stop offset="1" stop-color="#f3dfa9" />
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="49" pathLength="1" />
+          </svg>
+          <span class="splash-logo"
+            ><img src="assets/logo.png" alt="" width="500" height="500" fetchpriority="high"
+          /></span>
+          <span class="splash-sparks"><i></i><i></i><i></i></span>
+        </div>
+        <p class="splash-line">Repostería artesanal · Medellín</p>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var root = document.documentElement,
+          splash = document.getElementById("splash"),
+          entry = performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
+        // No se repite al volver con el botón Atrás. Con movimiento reducido el CSS ni la muestra.
+        if ((entry && entry.type === "back_forward") || matchMedia("(prefers-reduced-motion: reduce)").matches) return splash.remove();
+        var MIN = 1500, // lo que dura la entrada del sello
+          MAX = 3200, // tope aunque la página siga cargando
+          logo = splash.querySelector("img"),
+          started = 0,
+          leaving = false,
+          loaded = document.readyState === "complete";
+        root.classList.add("splash-on");
+        function play() {
+          if (started) return;
+          started = performance.now();
+          splash.classList.add("play");
+          setTimeout(function () {
+            if (loaded) leave();
+          }, MIN);
+          setTimeout(leave, MAX);
+        }
+        function leave() {
+          if (leaving) return;
+          leaving = true;
+          // El sello viaja hasta el logo del encabezado: el archivo del logo trae margen, el sello es el 60,8 %.
+          var seal = splash.querySelector(".splash-seal"),
+            brand = document.querySelector(".brand img"),
+            from = seal.getBoundingClientRect(),
+            to = brand && brand.getBoundingClientRect();
+          if (to && to.width && to.bottom > 0 && to.top < innerHeight) {
+            seal.style.setProperty("--tx", to.left + to.width / 2 - (from.left + from.width / 2) + "px");
+            seal.style.setProperty("--ty", to.top + to.height / 2 - (from.top + from.height / 2) + "px");
+            seal.style.setProperty("--s", (to.width * 0.608) / from.width);
+          } else splash.classList.add("nofly");
+          splash.classList.add("out");
+          // La portada entra mientras el telón sube.
+          setTimeout(function () {
+            root.classList.remove("splash-on");
+            document.dispatchEvent(new Event("nore:splash"));
+          }, 140);
+          setTimeout(function () {
+            splash.remove();
+          }, 1050);
+        }
+        if (logo.complete) play();
+        else {
+          logo.addEventListener("load", play, { once: true });
+          logo.addEventListener("error", play, { once: true });
+          setTimeout(play, 500);
+        }
+        window.addEventListener("load", function () {
+          loaded = true;
+          if (started && performance.now() - started >= MIN) leave();
+        });
+        // Quien no quiera esperar, toca y entra.
+        splash.addEventListener("pointerdown", leave);
+      })();
+    </script>
     <div class="scroll-sentinel" aria-hidden="true"></div>
     <a class="skip-link" href="#coleccion">Ir al catálogo</a>
     <div class="topbar">
@@ -901,17 +986,25 @@
       (function () {
         var root = document.documentElement,
           img = document.querySelector(".hero-visual img");
-        // El texto de la portada entra de inmediato; la foto, en cuanto llega.
-        root.classList.add("hero-go");
         function photo() {
           root.classList.add("hero-img-go");
         }
-        if (!img || img.complete) photo();
-        else {
-          img.addEventListener("load", photo, { once: true });
-          img.addEventListener("error", photo, { once: true });
-          setTimeout(photo, 1500);
+        // El texto de la portada entra de inmediato; la foto, en cuanto llega.
+        function start() {
+          if (root.classList.contains("hero-go")) return;
+          root.classList.add("hero-go");
+          if (!img || img.complete) photo();
+          else {
+            img.addEventListener("load", photo, { once: true });
+            img.addEventListener("error", photo, { once: true });
+            setTimeout(photo, 1500);
+          }
         }
+        // Con la pantalla de entrada, la portada espera a que el telón empiece a subir (o 5 s, por si algo falla).
+        if (root.classList.contains("splash-on")) {
+          document.addEventListener("nore:splash", start, { once: true });
+          setTimeout(start, 5000);
+        } else start();
       })();
     </script>
     <script type="module" src="src/main.js"></script>

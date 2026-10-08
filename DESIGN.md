@@ -38,6 +38,7 @@ Una idea rectora: **el sitio se despliega como un regalo**. Una portada ensayada
 | Lente de filtros | 420 ms |
 | Foto tarjeta → detalle / vuelta | 480 ms / 380 ms |
 | Miniatura a «Mi selección» | 680 ms |
+| Pantalla de entrada: sello / salida | 1,5 s / 0,9 s |
 | Portada (una vez) y revelados por scroll | 0,9–1,4 s |
 
 ### Reglas
@@ -52,6 +53,7 @@ Una idea rectora: **el sitio se despliega como un regalo**. Una portada ensayada
 
 ### Piezas
 
+- **Pantalla de entrada** (`splash.css` y guion en `index.html`): sobre un telón crema, un aro dorado se dibuja alrededor del sello, el sello se enfoca, lo cruza un destello y saltan tres chispas. Al salir, el sello vuela hasta el logo del encabezado y el telón sube con un borde en arco; la portada entra en ese momento. Dura 1,5 s (hasta 3,2 s si la página aún carga), se salta con un toque, no se repite al volver con Atrás y no existe con movimiento reducido ni sin JavaScript. Si el guion fallara, se retira sola a los 4,5 s.
 - **Portada**: titular por líneas desde una máscara, foto que se abre como un arco, sello que se estampa. Con ratón, la foto «mira» al cursor y el sello flota.
 - **«Todos» por secciones**: cada sección lleva su título (`group-title`) a todo lo ancho y sus tarjetas van en un `div.group` con `display: contents`, así siguen en la misma rejilla y conservan las formas por columna. Sin escalonado de columnas: la rejilla queda alineada, como al filtrar.
 - **Filtros**: una lente recortada desliza el color de un botón al siguiente; las tarjetas se reordenan con *View Transitions*.

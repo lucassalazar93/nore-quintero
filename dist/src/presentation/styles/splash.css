@@ -1,0 +1,67 @@
+/*
+ * Pantalla de entrada. Va al final, después de modal.css.
+ * El sello de la casa se dibuja y brilla; luego viaja a su sitio en el encabezado mientras el telón sube y descubre la portada.
+ * - Solo existe con JavaScript (clase `js`) y sin `prefers-reduced-motion`. El guion que la gobierna está en index.html,
+ *   justo debajo de su marcado, y no depende de los módulos de la tienda.
+ * - Lo visible por defecto es el estado final; las entradas usan `backwards`. Así la salida son transiciones normales.
+ * - Si el guion fallara, `splash-bye` la retira sola a los 4,5 s: nunca se queda tapando la tienda.
+ * - Solo transform y opacity, más un desenfoque breve sobre el sello (pieza pequeña).
+ */
+.splash{display:none}
+.js .splash{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;animation:splash-bye .5s ease 4.5s forwards}
+
+/* Telón: crema con luz al centro. Su borde inferior es un arco con filo dorado, el mismo gesto de las fotos del sitio. */
+.splash-curtain{position:absolute;inset:0}
+.splash-curtain::before{content:'';position:absolute;left:-22%;right:-22%;top:100%;height:24vh;margin-top:-12vh;border-radius:50%;border:1.5px solid #c9a25a;background:#f6ead8;box-shadow:0 22px 48px #650d2826}
+.splash-curtain::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 75% 55% at 50% 44%,#fffefa 0,#fff9ef 60%,#f6ead8 100%)}
+
+.splash-stage{position:relative;display:grid;justify-items:center;gap:clamp(28px,4.5vh,44px);--d:clamp(150px,min(44vw,30vh),280px)}
+.splash-seal{position:relative;width:var(--d);height:var(--d)}
+.splash-halo{position:absolute;inset:-60%;border-radius:50%;background:radial-gradient(circle,#f1d99966 0,#f1d99900 60%)}
+.splash-ring{position:absolute;inset:-10px;width:calc(100% + 20px);height:calc(100% + 20px);overflow:visible;rotate:-90deg}
+.splash-ring circle{fill:none;stroke:url(#splash-gold);stroke-width:2px;stroke-linecap:round;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:0}
+/* El archivo del logo trae margen transparente: el sello ocupa el 60,8 % (304 de 500 px), centrado. */
+.splash-logo{position:absolute;inset:0;border-radius:50%;overflow:hidden;box-shadow:0 24px 54px #650d2826}
+.splash-logo img{position:absolute;left:50%;top:50%;width:164.5%;height:auto;max-width:none;translate:-50% -50%}
+.splash-logo::after{content:'';position:absolute;inset:-10% auto -10% 0;width:40%;background:linear-gradient(90deg,#fff0,#fffc 50%,#fff0);transform:skewX(-18deg);translate:-180% 0}
+.splash-seal::after{content:'';position:absolute;inset:-10px;border-radius:50%;border:1.5px solid #c9a25a;opacity:0;pointer-events:none}
+.splash-sparks i{position:absolute;width:16px;aspect-ratio:1;opacity:0;scale:.4;filter:drop-shadow(0 0 6px #f3d58c)}
+.splash-sparks i::before{content:'';position:absolute;inset:0;background:#c9a25a;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%)}
+.splash-sparks i:nth-child(1){left:93%;top:3%}
+.splash-sparks i:nth-child(2){left:-13%;top:56%;width:11px}
+.splash-sparks i:nth-child(3){left:99%;top:76%;width:9px}
+.splash-line{position:relative;margin:0;font:600 11px/1 'DM Sans',sans-serif;letter-spacing:4.5px;text-indent:4.5px;text-transform:uppercase;white-space:nowrap;color:var(--gold)}
+
+/* Entrada: empieza cuando el logo ya está cargado (clase `play`). */
+.splash:not(.play) :is(.splash-halo,.splash-ring,.splash-logo,.splash-line){opacity:0}
+.splash.play .splash-halo{animation:splash-halo 1.2s cubic-bezier(.16,1,.3,1) backwards}
+.splash.play .splash-ring circle{animation:splash-draw .95s cubic-bezier(.65,0,.35,1) .05s backwards}
+.splash.play .splash-logo{animation:splash-in .9s cubic-bezier(.16,1,.3,1) .12s backwards}
+.splash.play .splash-logo::after{animation:splash-sheen .85s cubic-bezier(.4,0,.2,1) .62s}
+.splash.play .splash-seal::after{animation:splash-wave 1.15s cubic-bezier(.16,1,.3,1) .78s}
+.splash.play .splash-sparks i{animation:splash-twinkle .72s ease-in-out .72s}
+.splash.play .splash-sparks i:nth-child(2){animation-delay:.9s}
+.splash.play .splash-sparks i:nth-child(3){animation-delay:1.05s}
+.splash.play .splash-line{animation:splash-line .75s cubic-bezier(.16,1,.3,1) .5s backwards}
+
+/* Salida: el sello vuela al logo del encabezado (--tx, --ty y --s los calcula el guion) y el telón sube. */
+.splash.out{pointer-events:none}
+.splash.out :is(.splash-halo,.splash-ring,.splash-line,.splash-sparks){opacity:0;animation:none;transition:opacity .22s ease}
+.splash.out .splash-seal::after{animation:none}
+.splash.out .splash-logo{animation:none;box-shadow:0 0 0 #650d2800;transition:box-shadow .3s ease}
+.splash.out .splash-seal{translate:var(--tx,0) var(--ty,0);scale:var(--s,1);transition:translate .74s cubic-bezier(.7,0,.18,1),scale .74s cubic-bezier(.7,0,.18,1)}
+.splash.out .splash-curtain{translate:0 calc(-100% - 15vh);transition:translate .88s cubic-bezier(.7,0,.18,1) .05s}
+/* Sin logo a la vista en el encabezado, el sello simplemente se desvanece. */
+.splash.out.nofly .splash-seal{translate:none;scale:1.1;opacity:0;transition:scale .5s ease,opacity .32s ease}
+
+@keyframes splash-halo{from{opacity:0;scale:.55}}
+@keyframes splash-draw{from{stroke-dashoffset:1}}
+@keyframes splash-in{from{opacity:0;scale:.8;filter:blur(14px)}55%{opacity:1}}
+@keyframes splash-sheen{from{translate:-180% 0}to{translate:400% 0}}
+@keyframes splash-wave{from{opacity:.75;scale:1}to{opacity:0;scale:1.6}}
+@keyframes splash-twinkle{0%,100%{opacity:0;scale:.4;rotate:0deg}50%{opacity:1;scale:1;rotate:45deg}}
+@keyframes splash-line{from{opacity:0;translate:0 12px}}
+@keyframes splash-bye{to{opacity:0;visibility:hidden}}
+
+@media(min-width:761px){.splash-line{font-size:12px;letter-spacing:5.5px;text-indent:5.5px}.splash-sparks i{width:20px}.splash-sparks i:nth-child(2){width:14px}.splash-sparks i:nth-child(3){width:12px}}
+@media(prefers-reduced-motion:reduce){.js .splash{display:none}}
