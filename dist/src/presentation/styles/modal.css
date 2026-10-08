@@ -330,3 +330,38 @@ dialog.modal[open]{opacity:1}
 .detail-body>*,.presentations li{animation:none}
 dialog.modal .close::before,dialog.modal .close::after{transition:none}
 }
+
+/* ---------- Visor de fotos: la foto completa, a pantalla entera ---------- */
+/* En el detalle la foto va recortada dentro de su arco. «Ampliar» (o un toque sobre la foto) la abre entera aquí. */
+#product-detail .detail-photo{cursor:zoom-in}
+.photo-zoom{position:absolute;left:14px;bottom:38px;z-index:2;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px 0 11px;border:0;border-radius:100px;background:#fff9eff0;color:var(--wine);font-size:12.5px;font-weight:600;line-height:1;box-shadow:0 6px 18px #361b2233;transition:transform 160ms var(--ease-out),background-color .2s ease,color .2s ease}
+.photo-zoom svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.photo-zoom:active{transform:scale(.95)}
+@media(hover:hover) and (pointer:fine){.photo-zoom:hover{background:var(--wine);color:var(--cream)}}
+@media(min-width:960px),(min-width:761px) and (max-height:540px){.photo-zoom{left:36px;bottom:36px}}
+
+/* Ocupa el área visible sin contar la barra de desplazamiento (inset, no 100vw): así los botones no quedan debajo de ella. */
+dialog.viewer{position:fixed;inset:0;width:auto;max-width:none;height:auto;max-height:none;margin:0;padding:0;border:0;background:#1a0c10;color:#fff9ef;overflow:hidden;overscroll-behavior:contain}
+dialog.viewer:focus{outline:none}
+html:has(dialog.viewer[open]){background-color:#1a0c10}
+dialog.viewer::backdrop{background:#1a0c10;backdrop-filter:none}
+dialog.viewer[open]{animation:viewer-in .22s ease}
+dialog.viewer.leaving{opacity:0;transition:opacity .15s ease}
+.viewer-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:zoom-in;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;opacity:var(--dim,1)}
+.viewer.zoomed .viewer-stage{cursor:zoom-out}
+.viewer-stage img{display:block;flex:none;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;will-change:transform;-webkit-user-drag:none;animation:viewer-photo .3s var(--ease-out) backwards}
+.viewer-close{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px));width:46px;height:46px;padding:0;border:0;border-radius:50%;background:#fff9ef;color:var(--wine);box-shadow:0 6px 22px #0008}
+.viewer-close::before,.viewer-close::after{content:'';position:absolute;left:50%;top:50%;width:17px;height:2px;margin:-1px 0 0 -8.5px;border-radius:2px;background:currentColor;rotate:45deg}
+.viewer-close::after{rotate:-45deg}
+.viewer-nav{position:absolute;top:50%;width:46px;height:46px;margin-top:-23px;padding:0;border:0;border-radius:50%;background:#fff9ef2e;color:#fff9ef;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.viewer-prev{left:calc(10px + env(safe-area-inset-left,0px))}
+.viewer-next{right:calc(10px + env(safe-area-inset-right,0px))}
+.viewer-nav::before{content:'';position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -7px;border:solid currentColor;border-width:2px 2px 0 0;rotate:45deg}
+.viewer-prev::before{margin-left:-3px;rotate:-135deg}
+.viewer-count{position:absolute;left:50%;top:calc(24px + env(safe-area-inset-top,0px));translate:-50% 0;margin:0;padding:6px 13px;border-radius:100px;background:#0000008c;font-size:12px;font-weight:600;letter-spacing:1px;font-variant-numeric:tabular-nums;pointer-events:none}
+.viewer-hint{position:absolute;left:50%;bottom:calc(26px + env(safe-area-inset-bottom,0px));translate:-50% 0;max-width:calc(100% - 32px);margin:0;padding:10px 17px;border-radius:100px;background:#000000b3;font-size:13px;line-height:1.2;text-align:center;pointer-events:none;opacity:0;transition:opacity .35s ease}
+.viewer-hint.on{opacity:1}
+.viewer :is(.viewer-close,.viewer-nav):focus-visible{outline:3px solid #f3d58c;outline-offset:3px}
+@media(hover:hover) and (pointer:fine){.viewer-nav:hover{background:#fff9ef;color:var(--wine)}}
+@keyframes viewer-in{from{opacity:0}}
+@keyframes viewer-photo{from{opacity:0;scale:.96}}

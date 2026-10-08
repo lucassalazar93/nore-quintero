@@ -980,6 +980,15 @@
         ><button data-preferences>Más opciones</button>
       </div>
     </section>
+    <!-- Visor de fotos: la foto completa, sin recortes. Lo gobierna presentation/viewer.js. -->
+    <dialog class="viewer" id="photo-dialog" aria-label="Foto completa" tabindex="-1">
+      <div class="viewer-stage" id="viewer-stage"><img id="viewer-img" alt="" draggable="false" /></div>
+      <button class="viewer-close" type="button" aria-label="Cerrar la foto"></button>
+      <button class="viewer-nav viewer-prev" type="button" aria-label="Foto anterior" hidden></button>
+      <button class="viewer-nav viewer-next" type="button" aria-label="Foto siguiente" hidden></button>
+      <p class="viewer-count" id="viewer-count" aria-live="polite" hidden></p>
+      <p class="viewer-hint" id="viewer-hint" aria-hidden="true"></p>
+    </dialog>
     <div class="bag-bar" id="bag-bar" inert></div>
     <div class="sr-only" id="toast" role="status" aria-live="polite"></div>
     <script>
