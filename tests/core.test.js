@@ -140,14 +140,47 @@ test('favorites persist on the device, ignore unknown or tampered data and never
 test('corporate quote: services come from the real catalog and the message carries what the shop needs',()=>{
  const store=createStorefront({...catalogRepository}),services=store.corporateServices(),names=new Set(store.products().map(p=>p.name));
  assert.ok(services.length>=3);for(const s of services){assert.ok(s.label&&s.one&&s.many&&s.options.length,'servicio incompleto: '+s.id);for(const o of s.options)assert.ok(names.has(o.name),'opción fuera del catálogo: '+o.name);}
- const request={services:[{id:'almuerzos',quantity:40,options:['almuerzo-tradicional','lasana','brownie']},{id:'dulces',quantity:1,options:[]},{id:'refrigerios',quantity:0,options:[]}],company:'Acme S.A.S.',name:'Lucas Salazar',email:'lucas@acme.com',date:'2026-10-16',time:'12:30',frequency:'Cada semana',address:'Cra 43A # 1-50',area:'El Poblado',service:'Empaque individual',budget:'$25.000 por persona',notes:'3 vegetarianos\ncon bebida'};
+ const request={services:[{id:'almuerzos',quantity:40,options:['montanera','lasana','brownie']},{id:'dulces',quantity:1,options:[]},{id:'refrigerios',quantity:0,options:[]}],company:'Acme S.A.S.',name:'Lucas Salazar',email:'lucas@acme.com',date:'2026-10-16',time:'12:30',frequency:'Cada semana',address:'Cra 43A # 1-50',area:'El Poblado',service:'Empaque individual',budget:'$25.000 por persona',notes:'3 vegetarianos\ncon bebida'};
  const plain=store.corporate(request);
- assert.equal(plain,['¡Hola, Nore! Quiero cotizar un evento para mi empresa:','','Empresa: Acme S.A.S.','Contacto: Lucas Salazar','Correo: lucas@acme.com','','Lo que necesito:','• 40 almuerzos — Almuerzo Tradicional Colombiano, Lassaña Artesanal','• 1 porción de postre','','Fecha: viernes 16 de octubre, 12:30 p. m.','Frecuencia: cada semana','Lugar: Cra 43A # 1-50 — El Poblado','Servicio: empaque individual','Presupuesto: $25.000 por persona','Detalles: 3 vegetarianos con bebida','','¿Me ayudas con una propuesta y disponibilidad? ¡Muchas gracias!'].join('\n'));
- const short=store.corporate({services:[{id:'desayunos',quantity:25}],company:'Acme',name:'Lucas',date:'2026-10-16',time:'',frequency:'',address:'Sede norte',area:'Bello',service:'',budget:'',notes:''});
- assert.doesNotMatch(short,/Correo|Frecuencia|Servicio|Presupuesto|Detalles/);assert.match(short,/• 25 desayunos\n\nFecha: viernes 16 de octubre\nLugar: Sede norte — Bello\n\n¿Me ayudas/);
+ assert.equal(plain,['¡Hola, Nore! Quiero cotizar un evento para mi empresa:','','Empresa: Acme S.A.S.','Contacto: Lucas Salazar','Correo: lucas@acme.com','','Lo que necesito:','• 40 almuerzos — Montañera Tradicional, Lasaña Gourmet','• 1 porción de postre','','Fecha: viernes 16 de octubre, 12:30 p. m.','Frecuencia: cada semana','Lugar: Cra 43A # 1-50 — El Poblado','Servicio: empaque individual','Presupuesto: $25.000 por persona','Detalles: 3 vegetarianos con bebida','','¿Me ayudas con una propuesta y disponibilidad? ¡Muchas gracias!'].join('\n'));
+ const short=store.corporate({services:[{id:'refrigerios',quantity:25}],company:'Acme',name:'Lucas',date:'2026-10-16',time:'',frequency:'',address:'Sede norte',area:'Bello',service:'',budget:'',notes:''});
+ assert.doesNotMatch(short,/Correo|Frecuencia|Servicio|Presupuesto|Detalles/);assert.match(short,/• 25 refrigerios\n\nFecha: viernes 16 de octubre\nLugar: Sede norte — Bello\n\n¿Me ayudas/);
  store.setContext({emoji:true});assert.match(store.corporate(request),/🏢 Empresa: Acme S\.A\.S\.\n🙋 Contacto: Lucas Salazar[\s\S]*🍽️ Lo que necesito:\n• 40 almuerzos[\s\S]*⏰ Fecha: viernes 16 de octubre, 12:30 p\. m\.\n🔁 Frecuencia: cada semana[\s\S]*💰 Presupuesto: \$25\.000 por persona\n📝 Detalles: 3 vegetarianos con bebida/);
  assert.doesNotMatch(store.corporate({...request,invoice:true}),/actura/i,'la factura electrónica ya no se menciona');
  store.setContext({emoji:false});assert.match(store.corporate({...request,services:[{id:'almuerzos',quantity:12,options:[],advice:true},{id:'refrigerios',quantity:8,options:['amasijos'],advice:true}]}),/• 12 almuerzos — que Nore me recomiende\n• 8 refrigerios — Amasijos Colombianos\n/);store.setContext({emoji:true});
  assert.throws(()=>store.corporate({services:[{id:'inventado',quantity:5}]}));
- const prompts=new Map(services.flatMap(s=>s.options.map(o=>[o.id,o.prompt])));assert.equal(prompts.get('almuerzo-costilla'),true);assert.equal(prompts.get('desayuno-corporativo'),true);assert.equal(prompts.get('brownie'),false,'un postre de uso personal no debe invitar a cotizar para empresa');assert.equal(prompts.get('personalizados-3'),true);
+ const prompts=new Map(services.flatMap(s=>s.options.map(o=>[o.id,o.prompt])));assert.equal(prompts.get('costillas-bbq'),true);assert.equal(prompts.get('snack-express'),true);assert.equal(prompts.get('sandwich-cubano'),false);assert.equal(prompts.get('brownie'),false,'un postre de uso personal no debe invitar a cotizar para empresa');assert.equal(prompts.get('caja-deluxe'),false,'una caja de regalo es de uso personal');
+});
+test('catalog matches the price sheet: single prices, includes, and minimum orders that are enforced',()=>{
+ const store=createStorefront({...catalogRepository}),byId=id=>store.products().find(p=>p.id===id),price=id=>store.startingPrice(byId(id));
+ assert.equal(store.products().length,25,'solo los 25 productos de la hoja');assert.deepEqual(store.categories(),['Todos','Postres','Galletas y alfajores','Tortas','Salados','Refrigerios','Almuerzos','Anchetas']);
+ assert.deepEqual(store.categories().slice(1).map(name=>store.filter(name).length),[4,2,7,3,2,3,4],'ninguna sección con un solo producto');
+ assert.deepEqual(store.products().map(p=>p.category).filter((name,i,list)=>name!==list[i-1]),store.categories().slice(1),'en «Todos» cada sección sale junta y una sola vez');
+ assert.deepEqual(store.products().filter(p=>!p.image).map(p=>p.id),[],'todos con foto');assert.deepEqual(store.products().filter(p=>store.startingPrice(p)===null).map(p=>p.id),['montanera']);
+ // precios de la hoja
+ assert.equal(price('caja-brunch'),85000);assert.equal(price('caja-tradicion'),60000);assert.equal(price('caja-deluxe'),240000);assert.equal(price('celebra-la-vida'),75000);
+ assert.equal(price('sandwich-cubano'),24900);assert.equal(price('snack-express'),13000);assert.equal(price('caja-snack'),24000);assert.equal(price('montanera'),null);
+ const linePrice=key=>store.lines().find(l=>l.key===key).price;
+ assert.equal(linePrice('cheesecake:8-10-porciones'),85000);assert.equal(linePrice('cheesecake:mini-x-6'),40000);assert.equal(linePrice('cheesecake:mini-x-12'),75000);
+ assert.equal(linePrice('costillas-bbq:plato'),34900);assert.equal(linePrice('costillas-bbq:menu-completo'),39900);assert.equal(linePrice('lasana:menu-completo'),39900);assert.equal(linePrice('lasana:individual-con-pan-artesanal'),25000);
+ assert.equal(linePrice('arepa-rellena:pollo-especial'),18900);assert.equal(linePrice('amasijos:pandequeso-artesanal'),1600);assert.equal(linePrice('amasijos:mezcla-para-almojabana-kilo-1-000-g'),45000);
+ assert.deepEqual(store.products().filter(p=>p.highlight).map(p=>[p.id,p.highlight]),[['caja-deluxe','La joya de la casa']]);
+ assert.equal(byId('caja-deluxe').includes.length,9);assert.equal(byId('montanera').includes.length,5);assert.ok(byId('amasijos').steps.items.length>=4);
+ // pedido mínimo del producto: un formato único entra con el mínimo completo
+ assert.equal(byId('snack-express').min,10);assert.equal(store.add('snack-express'),10);assert.equal(store.entries().get('snack-express'),10);assert.equal(store.add('snack-express'),1);
+ assert.deepEqual(store.minimums(),[]);assert.match(store.quote(),/11 × Snack Express \(\$13\.000\)/);assert.deepEqual(store.total(),{amount:143000,complete:true});
+ store.change('snack-express',-2);const [issue]=store.minimums();assert.equal(issue.product.id,'snack-express');assert.equal(issue.required,10);assert.equal(issue.current,9);
+ store.change(issue.key,issue.required-issue.current);assert.deepEqual(store.minimums(),[]);
+ // mínimo del producto repartido entre sabores: la primera línea lo completa, la segunda entra de a una
+ assert.equal(store.add('arepa-rellena:pollo-especial'),10);assert.equal(store.add('arepa-rellena:carne-criolla'),1);
+ store.change('arepa-rellena:pollo-especial',-4);assert.deepEqual(store.minimums().map(i=>[i.product.id,i.label,i.current]),[['arepa-rellena',null,7]]);
+ store.change('arepa-rellena:carne-criolla',3);assert.deepEqual(store.minimums(),[]);
+ // mínimo por presentación: cada variedad de amasijo horneado por su cuenta; las mezclas no tienen mínimo
+ assert.equal(store.add('amasijos:pandequeso-artesanal'),10);assert.equal(store.add('amasijos:mezcla-para-pandeyuca-libra-500-g'),1);
+ store.change('amasijos:pandequeso-artesanal',-1);assert.deepEqual(store.minimums().map(i=>[i.label,i.required,i.current]),[['Pandequeso artesanal',10,9]]);
+ // sin mínimo: de a una, como siempre
+ assert.equal(store.add('tres-leches:8-10-porciones'),1);assert.equal(store.add('caja-brunch'),1);
+ // empresas conoce el mínimo de cada opción
+ const mins=new Map(store.corporateServices().flatMap(s=>s.options.map(o=>[o.id,o.min])));
+ assert.equal(mins.get('costillas-bbq'),10);assert.equal(mins.get('amasijos'),10);assert.equal(mins.get('montanera'),null);assert.equal(mins.get('sandwich-cubano'),null);
 });

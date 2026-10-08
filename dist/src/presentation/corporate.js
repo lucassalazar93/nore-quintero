@@ -36,7 +36,7 @@ export function mountCorporate({storefront, onReady}) {
     </div>
     ${choosable(service) ? `<div class="corp-options" role="group" aria-label="Producto: ${name}" hidden>
       <p class="corp-step"><b></b><span>Ahora elige el producto</span></p>
-      ${service.options.map(option => `<button type="button" data-option="${option.id}" aria-pressed="false">${TICK}<span>${option.name}</span></button>`).join('')}
+      ${service.options.map(option => `<button type="button" data-option="${option.id}" data-min="${option.min || 0}" aria-pressed="false">${TICK}<span>${option.name}</span>${option.min ? `<small>mín. ${option.min}</small>` : ''}</button>`).join('')}
       <button type="button" class="corp-advice" data-advice aria-pressed="false">${TICK}<span>Que Nore me recomiende</span></button>
       <p class="corp-picked" aria-live="polite"></p>
     </div>` : ''}
@@ -48,6 +48,9 @@ export function mountCorporate({storefront, onReady}) {
   const picked = id => [...row(id).querySelectorAll('[data-option][aria-pressed="true"]')];
   const advised = id => row(id).querySelector('[data-advice]')?.getAttribute('aria-pressed') === 'true';
   const pending = service => quantity(service.id) > 0 && choosable(service) && !picked(service.id).length && !advised(service.id);
+  // Pedido mínimo: el mayor entre los productos marcados. Sin productos marcados no se exige: Nore lo define al recomendar.
+  const required = service => Math.max(0, ...picked(service.id).map(option => Number(option.dataset.min)));
+  const low = service => quantity(service.id) > 0 && quantity(service.id) < required(service);
   const amount = service => `${quantity(service.id)} ${quantity(service.id) === 1 ? service.one : service.many}`;
   // Una sola función pinta el estado: qué servicios cuentan, qué falta elegir y qué se va a cotizar.
   const sync = () => {
@@ -55,22 +58,26 @@ export function mountCorporate({storefront, onReady}) {
       const target = row(service.id);
       const on = quantity(service.id) > 0;
       target.classList.toggle('on', on);
-      target.classList.toggle('need', pending(service));
+      target.classList.toggle('need', pending(service) || low(service));
       const options = target.querySelector('.corp-options');
       if (!options) return;
       options.hidden = !on;
-      const names = picked(service.id).map(option => option.textContent.trim());
+      const names = picked(service.id).map(option => option.querySelector('span').textContent.trim());
       const note = target.querySelector('.corp-picked');
       const done = names.length > 0 || advised(service.id);
       target.querySelector('.corp-step span').textContent = done ? 'Producto elegido' : 'Ahora elige el producto';
-      note.textContent = names.length ? `Elegiste: ${names.join(', ')}.` : advised(service.id) ? 'Nore te recomendará las opciones.' : 'Toca una o varias opciones.';
-      note.classList.toggle('some', done);
+      note.textContent = low(service) ? `El pedido mínimo de lo que elegiste es de ${required(service)} unidades. Sube la cantidad.`
+        : names.length ? `Elegiste: ${names.join(', ')}.` : advised(service.id) ? 'Nore te recomendará las opciones.' : 'Toca una o varias opciones.';
+      note.classList.toggle('some', done && !low(service));
+      note.classList.toggle('low', low(service));
     });
     const active = services.filter(service => quantity(service.id) > 0);
     const missing = active.filter(pending);
-    recap.className = `corp-recap ${!active.length ? 'start' : missing.length ? 'warn' : 'ready'}`;
+    const short = active.filter(low);
+    recap.className = `corp-recap ${!active.length ? 'start' : missing.length || short.length ? 'warn' : 'ready'}`;
     recap.textContent = !active.length ? 'Empieza por la cantidad: toca + o escribe.'
       : missing.length ? `Falta elegir el producto en ${missing.map(service => service.label).join(', ')}.`
+      : short.length ? `En ${short[0].label} el pedido mínimo es de ${required(short[0])} unidades.`
       : `Listo. Vas a cotizar: ${active.map(amount).join(' · ')}`;
     if (active.length) error.hidden = true;
   };
@@ -118,7 +125,7 @@ export function mountCorporate({storefront, onReady}) {
       nudge(recap);
       return;
     }
-    const missing = active.find(pending);
+    const missing = active.find(pending) || active.find(low);
     if (missing) {
       const options = row(missing.id).querySelector('.corp-options');
       options.scrollIntoView({block: 'center', behavior: 'smooth'});

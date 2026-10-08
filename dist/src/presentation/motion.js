@@ -69,6 +69,18 @@ function mountReveals() {
     if (!transitioning && !reduced.matches) staggerIn(cards);
   });
 }
+/** El producto insignia solo brilla mientras está a la vista: fuera de pantalla sus animaciones quedan en pausa. */
+function mountJewel() {
+  const observer = 'IntersectionObserver' in window
+    ? new IntersectionObserver(entries => entries.forEach(entry => entry.target.classList.toggle('lit', entry.isIntersecting)), {rootMargin: '80px 0px'})
+    : null;
+  const watch = () => {
+    observer?.disconnect();
+    document.querySelectorAll('#products .jewel').forEach(card => (observer ? observer.observe(card) : card.classList.add('lit')));
+  };
+  watch();
+  window.addEventListener('nore:catalog', watch);
+}
 function staggerIn(cards) {
   cards.slice(0, 9).forEach((card, i) => card.animate(
     [{opacity: 0, translate: '0 22px'}, {opacity: 1, translate: '0 0'}],
@@ -354,6 +366,7 @@ export function createMotion() {
       api.select = mountFilters();
       mountScrollState();
       mountReveals();
+      mountJewel();
       mountScrollSpy();
       mountModals();
       mountImages();

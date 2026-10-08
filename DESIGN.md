@@ -53,8 +53,10 @@ Una idea rectora: **el sitio se despliega como un regalo**. Una portada ensayada
 ### Piezas
 
 - **Portada**: titular por líneas desde una máscara, foto que se abre como un arco, sello que se estampa. Con ratón, la foto «mira» al cursor y el sello flota.
+- **«Todos» por secciones**: cada sección lleva su título (`group-title`) a todo lo ancho y sus tarjetas van en un `div.group` con `display: contents`, así siguen en la misma rejilla y conservan las formas por columna. Sin escalonado de columnas: la rejilla queda alineada, como al filtrar.
 - **Filtros**: una lente recortada desliza el color de un botón al siguiente; las tarjetas se reordenan con *View Transitions*.
 - **Producto**: la foto de la tarjeta viaja al detalle y vuelve (con `Escape` también). Abrir otro producto desde el detalle cambia el contenido en el sitio.
+- **Producto insignia** (`highlight` en el catálogo; hoy, Caja Deluxe): el único elemento con animación continua. Marco dorado con una luz que lo recorre (7 s por vuelta), un destello que cruza la foto cada 6,5 s y tres chispas; en el detalle, destello y chispas. Solo `rotate`, `translate`, `scale` y `opacity`; en la colección se pausa fuera de pantalla (clase `lit`). Con movimiento reducido queda el marco quieto. Es una excepción deliberada a la regla 7 y vale porque es uno solo: `npm run check` falla si hay más de un producto con `highlight`.
 - **Selección**: la miniatura vuela al botón «Mi selección», el botón muestra una marca, la barra inferior confirma con el nombre del producto y el total se acomoda con resorte. Al quitar un producto, su fila sale y las demás se deslizan a su lugar.
 - **Fotos**: las que aún no han llegado esperan invisibles y se funden al cargar; el detalle muestra la miniatura mientras llega la foto grande.
 - **Hilo de lectura y sección activa en el menú**: constantes y discretos.

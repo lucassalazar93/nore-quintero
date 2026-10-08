@@ -132,6 +132,40 @@ img.img-wait{opacity:0}
 .cookie-banner{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 @media(max-width:600px){.avatar-button{bottom:calc(14px + env(safe-area-inset-bottom,0px))}.cookie-banner{bottom:calc(12px + env(safe-area-inset-bottom,0px))}}
 
+/* ---------- Producto insignia: el único que brilla ---------- */
+/*
+ * `highlight` en content/products.js. Tres piezas, todas decorativas y solo con transform y opacity:
+ * un marco dorado con una luz que lo recorre, un destello que cruza la foto y tres chispas.
+ * En la colección solo se mueve mientras la tarjeta está a la vista (clase `lit`, motion.js).
+ * Con movimiento reducido queda el marco dorado quieto y las chispas fijas.
+ */
+#products .product.jewel{position:relative;border-color:transparent;background:linear-gradient(165deg,#fffdf7,#fbefd6);box-shadow:0 16px 42px #b98e3c36,0 2px 10px #650d280a}
+.jewel-ring{position:absolute;inset:-1px;z-index:1;padding:2px;border-radius:inherit;overflow:hidden;pointer-events:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.jewel-ring i{position:absolute;left:50%;top:50%;width:280%;aspect-ratio:1;translate:-50% -50%;background:conic-gradient(#c59b4f 0 10%,#efd591 19%,#fffbea 25%,#efd591 31%,#c59b4f 40% 60%,#efd591 69%,#fffbea 75%,#efd591 81%,#c59b4f 90%);animation:jewel-turn 7s linear infinite}
+.jewel .product-image::after,#product-detail.jewel .detail-photo::after{content:'';position:absolute;inset:-12% auto -12% 0;z-index:1;width:36%;background:linear-gradient(90deg,#fff0,#fff9 50%,#fff0);transform:skewX(-16deg);translate:-170% 0;pointer-events:none;animation:jewel-sheen 6.5s cubic-bezier(.4,0,.2,1) 1s infinite}
+.jewel-sparks{position:absolute;inset:0;z-index:1;pointer-events:none}
+.jewel-sparks i{position:absolute;width:14px;aspect-ratio:1;opacity:0;scale:.4;filter:drop-shadow(0 0 5px #ffe6a6);animation:jewel-twinkle 4.4s ease-in-out infinite}
+.jewel-sparks i::before{content:'';position:absolute;inset:0;background:#fffdf4;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%)}
+.jewel-sparks i:nth-child(1){left:19%;top:26%}
+.jewel-sparks i:nth-child(2){left:73%;top:15%;width:10px;animation-delay:1.5s}
+.jewel-sparks i:nth-child(3){left:60%;top:58%;width:12px;animation-delay:2.9s}
+.product.jewel:not(.lit) .jewel-ring i,.product.jewel:not(.lit) .jewel-sparks i,.product.jewel:not(.lit) .product-image::after{animation-play-state:paused}
+.jewel-chip{display:flex;align-items:center;gap:6px;font:600 10px/1.3 'DM Sans',sans-serif;letter-spacing:1.3px;text-transform:uppercase;text-wrap:balance;color:var(--gold)}
+.jewel-chip::before{content:'';flex:none;width:10px;aspect-ratio:1;background:currentColor;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%)}
+#products .jewel>.jewel-chip{padding:18px 12px 0;font-size:11px}
+#products .jewel>.jewel-chip+.product-info{padding-top:6px}
+/* Detalle: el sello ocupa el lugar del nombre de la sección y las chispas son más grandes. */
+.detail-top .jewel-chip{font-size:11px;letter-spacing:1.8px}
+.detail-media .jewel-sparks i{width:20px}
+.detail-media .jewel-sparks i:nth-child(2){width:14px}
+.detail-media .jewel-sparks i:nth-child(3){width:16px}
+@media(max-width:1100px){#products .jewel>.jewel-chip{padding:11px 8px 0;font-size:9.5px;letter-spacing:1px}#products .jewel>.jewel-chip+.product-info{padding-top:4px}}
+@media(max-width:760px){.jewel-sparks i{width:12px}.jewel-sparks i:nth-child(2){width:9px}.jewel-sparks i:nth-child(3){width:10px}}
+@keyframes jewel-turn{to{rotate:1turn}}
+@keyframes jewel-sheen{0%{translate:-170% 0}24%,100%{translate:460% 0}}
+@keyframes jewel-twinkle{0%,56%,100%{opacity:0;scale:.4;rotate:0deg}70%{opacity:1;scale:1;rotate:45deg}84%{opacity:0;scale:.5;rotate:90deg}}
+@media(prefers-reduced-motion:reduce){.jewel-sparks i{opacity:.9;scale:.8}}
+
 /* ---------- Reducción de movimiento: fundidos suaves, sin desplazamientos ---------- */
 @media(prefers-reduced-motion:reduce){
 .js [data-rv],.js [data-rv]>*{translate:none!important;scale:none!important;filter:none!important;transition:opacity .4s ease!important}

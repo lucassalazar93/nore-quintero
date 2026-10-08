@@ -1,10 +1,12 @@
-import {changeQuantity, filterProducts, categories, selectionLines, selectionTotal, startingPrice, formatPrice, pricePerPortion, bestFit, relatedProducts, portionRange} from '../domain/catalog.js';
+import {changeQuantity, filterProducts, categories, selectionLines, selectionTotal, startingPrice, formatPrice, pricePerPortion, bestFit, relatedProducts, portionRange, firstQuantity, minimumIssues} from '../domain/catalog.js';
 import {selectionMessage, customMessage, corporateMessage, withReason} from '../domain/messages.js';
 import {nextOccasion} from '../domain/calendar.js';
 /**
  * Repository port: {all(): Product[], funnel?(): {calendar, pairings, guestOptions, testimonials}}.
  * All selection state is session-only. Selection keys come from `lines()`.
  */
+/** Pedido mínimo de un producto: el suyo o, si lo tienen sus presentaciones, el menor de ellos. `null` si no tiene. */
+const minimumOf = product => product.min ?? (product.presentations.map(item => item.min).filter(Boolean).sort((a, b) => a - b)[0] ?? null);
 export function createStorefront(repository) {
   const products = repository.all();
   const lines = selectionLines(products);
@@ -18,6 +20,14 @@ export function createStorefront(repository) {
     filter: category => filterProducts(products, category),
     entries: () => new Map(selection),
     change(key, delta) { selection = changeQuantity(selection, key, delta, lines); },
+    /** Agrega respetando el pedido mínimo: devuelve cuántas unidades entraron (1, o las necesarias para alcanzarlo). */
+    add(key) {
+      const quantity = firstQuantity(selection, key, lines);
+      selection = changeQuantity(selection, key, quantity, lines);
+      return quantity;
+    },
+    /** Lo elegido que aún no cumple su pedido mínimo; vacío cuando todo está en orden. */
+    minimums: () => minimumIssues(selection, lines),
     total: () => selectionTotal(selection, lines),
     startingPrice,
     formatPrice,
@@ -46,7 +56,7 @@ export function createStorefront(repository) {
     /** Servicios para empresas, con las opciones resueltas a productos reales del catálogo. */
     corporateServices: () => (funnel.corporate ?? []).map(service => ({
       ...service,
-      options: service.options.map(id => products.find(product => product.id === id)).filter(Boolean).map(({id, name, description, category}) => ({id, name, description, category, prompt: (service.prompt ?? service.options).includes(id)})),
+      options: service.options.map(id => products.find(product => product.id === id)).filter(Boolean).map(product => ({id: product.id, name: product.name, description: product.description, category: product.category, prompt: (service.prompt ?? service.options).includes(product.id), min: minimumOf(product)})),
     })),
     /** La solicitud llega con ids (`services: [{id, quantity, options: [ids]}]`); el mensaje sale con nombres del catálogo. */
     corporate(request) {

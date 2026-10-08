@@ -250,6 +250,8 @@ dialog.modal .corp-stepper input{width:58px;margin:0;padding:8px 0;border:0;bord
 .corp-options button[aria-pressed=true] .tick::after{scale:1}
 .corp-picked{flex-basis:100%;margin:2px 0 0;font-size:13px;line-height:1.45;color:var(--muted)}
 .corp-picked.some{color:var(--wine);font-weight:500}
+.corp-picked.low{color:#8f1f24;font-weight:600}
+.corp-options button small{font-size:11px;opacity:.75}
 /* Resumen vivo junto al botón: lo que se va a cotizar, antes de continuar */
 .corp-recap{margin:0 0 10px;padding:9px 14px;border-radius:14px;font-size:13px;line-height:1.45;text-align:center;font-weight:600;color:var(--dark);background:#f4e9da;transition:background-color .25s ease,color .25s ease}
 .corp-recap.warn{background:#fbe9e5;color:#8f1f24}

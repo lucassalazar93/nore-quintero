@@ -5,15 +5,50 @@ export function categories(products) {
   return ['Todos', ...new Set(products.map(product => product.category))];
 }
 const slug = text => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-/** Unidades que se pueden elegir: una por presentación, o una sola si el producto no tiene presentaciones. */
+/**
+ * Unidades que se pueden elegir: una por presentación, o una sola si el producto no tiene presentaciones
+ * (con su `price`, si lo tiene). `min` es el pedido mínimo de esa presentación; el del producto va en `product.min`.
+ */
 export function selectionLines(products) {
   return products.flatMap(product => product.presentations?.length
-    ? product.presentations.map(({label, price, note}) => ({key: `${product.id}:${slug(label)}`, product, label, price: price ?? null, note: note ?? null}))
-    : [{key: product.id, product, label: null, price: null, note: null}]);
+    ? product.presentations.map(({label, price, note, min, group}) => ({key: `${product.id}:${slug(label)}`, product, label, price: price ?? null, note: note ?? null, min: min ?? null, group: group ?? null}))
+    : [{key: product.id, product, label: null, price: product.price ?? null, note: null, min: null, group: null}]);
 }
 export function startingPrice(product) {
-  const prices = (product.presentations || []).map(item => item.price).filter(Number.isFinite);
+  const prices = (product.presentations?.length ? product.presentations.map(item => item.price) : [product.price]).filter(Number.isFinite);
   return prices.length ? Math.min(...prices) : null;
+}
+const productTotal = (entries, product, lines) =>
+  lines.reduce((sum, line) => sum + (line.product === product ? entries.get(line.key) || 0 : 0), 0);
+/**
+ * Con cuántas unidades entra una línea a la selección: de a una, salvo que tenga pedido mínimo.
+ * Si el mínimo es de la presentación, entra con ese mínimo; si es del producto, con lo que falte para alcanzarlo.
+ */
+export function firstQuantity(entries, key, lines) {
+  const line = lines.find(item => item.key === key);
+  if (!line) throw new Error('Producto desconocido');
+  if (entries.get(key)) return 1;
+  if (line.min) return line.min;
+  return line.product.min ? Math.max(1, line.product.min - productTotal(entries, line.product, lines)) : 1;
+}
+/**
+ * Lo elegido que aún no cumple su pedido mínimo. Por presentación (`label` con valor) o por producto,
+ * sumando sus presentaciones (`label: null`). `key` es la línea a la que conviene sumarle lo que falta.
+ */
+export function minimumIssues(entries, lines) {
+  const issues = [];
+  const checked = new Set();
+  for (const [key, quantity] of entries) {
+    const line = lines.find(item => item.key === key);
+    if (!line) continue;
+    if (line.min && quantity < line.min) issues.push({key, product: line.product, label: line.label, required: line.min, current: quantity});
+    const {product} = line;
+    if (!product.min || checked.has(product)) continue;
+    checked.add(product);
+    const total = productTotal(entries, product, lines);
+    if (total < product.min) issues.push({key, product, label: null, required: product.min, current: total});
+  }
+  return issues;
 }
 export function formatPrice(amount) {
   return '$' + String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, '.');

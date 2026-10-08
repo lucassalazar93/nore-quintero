@@ -117,3 +117,14 @@ header{padding-block:8px}
 #products .product .price{font-size:14px}
 #products .product .add{width:40px;height:40px;font-size:21px}
 }
+
+/* ---------- «Todos»: la colección por secciones ---------- */
+/* Cada sección lleva su título a todo lo ancho y sus tarjetas en un contenedor sin caja propia: siguen siendo
+   celdas de la misma rejilla y conservan las formas por columna (nth-child) como en una vista filtrada. */
+#products .group{display:contents}
+#products .group .product{margin-top:0}
+#products .group-title{grid-column:1/-1;display:flex;align-items:center;gap:18px;margin:34px 0 -6px;padding:0;font-size:clamp(30px,2.7vw,40px);line-height:1.1;color:var(--dark)}
+#products .group-title:first-child{margin-top:0}
+#products .group-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line),#dacbbc00)}
+@media(max-width:1100px){#products .group-title{margin:20px 2px -4px;font-size:28px}}
+@media(max-width:760px){#products .group-title{gap:12px;margin:16px 2px 0;font-size:25px}}

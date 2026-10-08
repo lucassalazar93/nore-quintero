@@ -14,3 +14,26 @@
 .gallery img{display:block;width:100%;height:100%;object-fit:cover}
 
 .price small{font-size:inherit;font-weight:inherit;color:inherit;margin-right:2px}
+
+/* ---------- Pedido mínimo, «Incluye» e instrucciones (datos de la hoja de precios) ---------- */
+.price .price-min{display:block;margin:3px 0 0;font-size:11px;font-weight:600;letter-spacing:.3px;color:var(--gold)}
+.detail-min{display:inline-block;margin:-4px 0 14px;padding:5px 12px;border-radius:100px;background:#f4e9da;box-shadow:inset 0 0 0 1px #d6b384;font-size:13px;font-weight:600;color:var(--wine)}
+.detail-includes{margin:18px 0 4px;padding:16px 18px;border:1px solid #ecdfcf;border-radius:20px;background:#fffdf7}
+.detail-includes ul{margin:0;padding:0;list-style:none;display:grid;gap:7px}
+.detail-includes li{position:relative;padding-left:20px;font-size:14px;line-height:1.5;color:var(--dark)}
+.detail-includes li::before{content:'';position:absolute;left:3px;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.detail-extra{margin:12px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
+.presentations .pres-group{display:block;padding:16px 0 6px;border-bottom:0;font-size:11px;font-weight:600;letter-spacing:1.4px;line-height:1.4;text-transform:uppercase;color:var(--gold)}
+.presentations .row-min{font-weight:600;color:var(--wine)}
+.detail-steps{margin:16px 0 0;border:1px solid #ecdfcf;border-radius:18px;background:#fffdf7}
+.detail-steps summary{padding:13px 18px;font-size:14px;font-weight:600;color:var(--wine);cursor:pointer}
+.detail-steps ol{margin:0;padding:0 18px 16px 38px;display:grid;gap:8px}
+.detail-steps li{font-size:14px;line-height:1.55;color:var(--dark)}
+.bag-info .bag-min-note{color:var(--gold);font-weight:600}
+#bag-min{display:grid;gap:8px;margin:14px 0 4px}
+#bag-min[hidden]{display:none}
+.min-issue{display:flex;align-items:center;justify-content:space-between;gap:10px 14px;flex-wrap:wrap;padding:12px 14px;border-radius:16px;background:#fbe9e5;box-shadow:inset 0 0 0 1.5px #a3262b}
+.min-issue>div{flex:1 1 180px;min-width:0}
+.min-issue strong{display:block;font-size:14px;font-weight:600;line-height:1.35;color:#8f1f24}
+.min-issue small{display:block;margin-top:2px;font-size:13px;color:#8f1f24}
+.min-issue button{flex:none;min-height:42px;padding:8px 16px;border:0;border-radius:100px;background:var(--wine);color:var(--cream);font-size:13px;font-weight:600;cursor:pointer}

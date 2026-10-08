@@ -28,12 +28,20 @@ for(const product of products){
   if(!/^[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|avif)$/i.test(file) || file.includes('..') || !existsSync(resolve(root,'assets',file)))throw Error('Foto inválida o inexistente: '+product.id+' → '+file);
  }
  if(product.gallery.length&&!product.image)throw Error('La galería necesita una foto principal: '+product.id);
+ const whole=value=>Number.isInteger(value)&&value>0;
+ if(product.price!==null&&!whole(product.price))throw Error('Precio inválido (entero en pesos, sin puntos) en '+product.id);
+ if(product.price!==null&&product.presentations.length)throw Error('Usa `price` o `presentations`, no ambos: '+product.id);
+ if(product.min!==null&&!whole(product.min))throw Error('Pedido mínimo inválido en '+product.id);
+ if(!Array.isArray(product.includes)||product.includes.some(item=>typeof item!=='string'||!item.trim()))throw Error('«Incluye» debe ser una lista de textos: '+product.id);
+ if(product.highlight!==null&&(typeof product.highlight!=='string'||!product.highlight.trim()))throw Error('`highlight` debe ser el texto del sello: '+product.id);
+ if(product.steps&&(!product.steps.title||!Array.isArray(product.steps.items)||!product.steps.items.length))throw Error('Instrucciones incompletas en '+product.id);
  const labels=new Set();
  for(const item of product.presentations){
   if(!item.label||typeof item.label!=='string')throw Error('Presentación sin nombre en '+product.id);
   if(labels.has(item.label))throw Error('Presentación repetida en '+product.id+': '+item.label);
   labels.add(item.label);
   if(item.price!==undefined&&item.price!==null&&(!Number.isInteger(item.price)||item.price<=0))throw Error('Precio inválido (entero en pesos, sin puntos) en '+product.id+' → '+item.label);
+  if(item.min!==undefined&&!whole(item.min))throw Error('Pedido mínimo inválido en '+product.id+' → '+item.label);
  }
 }
 if(siteConfig.whatsappNumber && !/^\d{7,15}$/.test(siteConfig.whatsappNumber))throw Error('WhatsApp debe contener de 7 a 15 dígitos, sin + ni espacios.');
@@ -47,7 +55,9 @@ for(const section of catalog){
   seen.add(item.id);
  }
 }
-console.log(`Catálogo: ${catalog.length} secciones, ${products.length} productos, ids únicos.`);
+const highlighted=products.filter(p=>p.highlight).map(p=>p.id);
+if(highlighted.length>1)throw Error('Solo un producto puede llevar `highlight` (si todo brilla, nada destaca): '+highlighted.join(', '));
+console.log(`Catálogo: ${catalog.length} secciones, ${products.length} productos, ids únicos.${highlighted.length?' Producto insignia: '+highlighted[0]+'.':''}`);
 
 const ids=new Set(products.map(p=>p.id)),sections=new Set(products.map(p=>p.category));
 for(const c of calendar)if(!sections.has(c.section))throw Error('Fecha especial con sección inexistente: '+c.id);
@@ -65,5 +75,5 @@ for(const tag of ['rel="canonical" href="','property="og:url" content="'])if(!pa
 const shareFile=resolve(root,share.slice(siteConfig.url.length+1));
 if(!existsSync(shareFile))throw Error('Falta la imagen para compartir: '+share);
 if(readFileSync(shareFile).length>300*1024)throw Error('La imagen para compartir pesa más de 300 KB: WhatsApp puede no mostrarla');
-const pending=products.filter(p=>!p.image).length,unpriced=products.filter(p=>!p.presentations.length).length;
-console.log(`Publicable como sitio estático. Pendientes de contenido: ${pending} fotos de catálogo; ${unpriced} productos sin precio; WhatsApp ${siteConfig.whatsappNumber?'configurado':'sin configurar'}. Revisar LISTO-PARA-PUBLICAR.md.`);
+const pending=products.filter(p=>!p.image).length,unpriced=products.filter(p=>!p.presentations.length&&p.price===null).length,minimums=products.filter(p=>p.min||p.presentations.some(item=>item.min)).length;
+console.log(`Publicable como sitio estático. Pendientes de contenido: ${pending} fotos de catálogo; ${unpriced} productos sin precio (se cotizan); ${minimums} con pedido mínimo; WhatsApp ${siteConfig.whatsappNumber?'configurado':'sin configurar'}. Revisar LISTO-PARA-PUBLICAR.md.`);

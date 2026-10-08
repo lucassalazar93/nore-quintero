@@ -1,12 +1,12 @@
 # Nore Quintero — frontend por capas
 
-Frontend estático en JavaScript con módulos ES nativos. Sin backend, framework ni dependencias de ejecución. Conserva el diseño, el catálogo ilustrativo y el carrusel táctil. `dist/` es el sitio completo y publicable; en este proyecto estático contiene el código fuente, no un resultado generado.
+Frontend estático en JavaScript con módulos ES nativos. Sin backend, framework ni dependencias de ejecución. Conserva el diseño y el carrusel táctil; el catálogo sale de la hoja de precios de la tienda. `dist/` es el sitio completo y publicable; en este proyecto estático contiene el código fuente, no un resultado generado.
 
 ## Capas
 
 | Directorio bajo `dist/src` | Responsabilidad |
 | --- | --- |
-| `domain/` | Reglas puras: filtros, cantidades, mensajes y vigencia de preferencias. |
+| `domain/` | Reglas puras: filtros, cantidades, pedidos mínimos, mensajes y vigencia de preferencias. |
 | `application/` | Casos de uso y estado temporal. Recibe repositorio, reloj y servicios por parámetros. |
 | `infrastructure/` | Adaptadores del catálogo, almacenamiento local, portapapeles, WhatsApp y Google Maps. |
 | `presentation/` | Plantillas DOM, eventos, diálogos, navegación, carrusel, estilos y movimiento (`motion.js`, `spring.js`). |
@@ -24,7 +24,7 @@ No hay instalación ni compilación obligatoria. Para comprobar el proyecto con 
 
 ## Editar sin cambiar la arquitectura
 
-- Productos: `dist/src/content/products.js`, organizado por secciones. Cada sección es una categoría del filtro y su orden define el orden de los filtros. Para agregar un producto, añadir una línea a los `items` de su sección; para reordenar, mover la línea o el bloque. La categoría no se escribe en el producto: la aporta la sección. Para una foto real, guardar el archivo en `dist/assets/` y cambiar `image:null` por `image:'nombre.webp'` en el producto. `null` conserva la ilustración de respaldo. Tamaños y precios van en `presentations:[{label:'8-10 porciones',price:65000}]` (pesos enteros, sin puntos): cada presentación se elige y suma por separado en «Mi selección». Sin `presentations` el producto sale como «Precio por cotizar». `gallery` añade fotos extra al detalle y `focus` ajusta el recorte de fotos verticales; ambos son opcionales y se explican en la cabecera de `products.js`.
+- Productos: `dist/src/content/products.js`, organizado por secciones. Cada sección es una categoría del filtro y su orden define el orden de los filtros y el de la vista «Todos», donde cada sección sale con su título. Para agregar un producto, añadir una línea a los `items` de su sección; para reordenar, mover la línea o el bloque. La categoría no se escribe en el producto: la aporta la sección. Para una foto real, guardar el archivo en `dist/assets/` y cambiar `image:null` por `image:'nombre.webp'` en el producto. `null` conserva la ilustración de respaldo. Tamaños y precios van en `presentations:[{label:'8-10 porciones',price:65000}]` (pesos enteros, sin puntos): cada presentación se elige y suma por separado en «Mi selección». Un producto de formato único lleva `price:85000`. Sin `presentations` ni `price` el producto sale como «Precio por cotizar». `min` es el pedido mínimo (del producto, sumando sus presentaciones, o de una presentación): el primer «Agregar» pone el mínimo completo y la selección no deja cotizar por debajo. `includes`, `extra` y `steps` añaden al detalle la lista «Incluye», una nota y unas instrucciones plegables. `gallery` añade fotos extra al detalle y `focus` ajusta el recorte de fotos verticales; ambos son opcionales y se explican en la cabecera de `products.js`.
 - Contacto: `dist/src/config/site.js`. `email` es el correo de la tienda (pie de página y textos legales; `npm run check` avisa si el pie no coincide). WhatsApp: número internacional solo con dígitos. Vacío mantiene el modo de copiar consulta. Antes de activarlo, completar datos legales y proceso de consentimiento.
 - Reglas y validaciones: `domain/`; flujos y estado: `application/`.
 - Integración futura con un API: sustituir el repositorio mediante el punto de composición; revisar su contrato si pasa a ser asíncrono.

@@ -7,12 +7,12 @@
 // {month, weekday (0 = domingo), nth (-1 = último)}. Si falta menos de `windowDays`, se avisa en la página.
 export const calendar = [
   {id:'ninos', name:'el Día de los Niños', when:{month:3, weekday:6, nth:-1}, section:'Tortas'},
-  {id:'madre', name:'el Día de la Madre', when:{month:4, weekday:0, nth:2}, section:'Desayunos sorpresa'},
-  {id:'padre', name:'el Día del Padre', when:{month:5, weekday:0, nth:3}, section:'Desayunos sorpresa'},
-  {id:'amistad', name:'Amor y Amistad', when:{month:8, weekday:6, nth:3}, section:'Desayunos sorpresa'},
+  {id:'madre', name:'el Día de la Madre', when:{month:4, weekday:0, nth:2}, section:'Anchetas'},
+  {id:'padre', name:'el Día del Padre', when:{month:5, weekday:0, nth:3}, section:'Anchetas'},
+  {id:'amistad', name:'Amor y Amistad', when:{month:8, weekday:6, nth:3}, section:'Anchetas'},
   {id:'halloween', name:'Halloween', when:{month:9, day:31}, section:'Postres'},
   {id:'navidad', name:'la Navidad', when:{month:11, day:25}, section:'Tortas'},
-  {id:'mujer', name:'el Día de la Mujer', when:{month:2, day:8}, section:'Desayunos sorpresa'},
+  {id:'mujer', name:'el Día de la Mujer', when:{month:2, day:8}, section:'Anchetas'},
 ];
 export const calendarWindowDays = 45;
 
@@ -21,15 +21,13 @@ export const calendarWindowDays = 45;
 export const pairings = {
   byProduct: {},
   bySection: {
-    'Tortas': ['alfajores', 'panacotas', 'brownie'],
-    'Tartas vascas': ['panacotas', 'cookies-levain'],
     'Postres': ['alfajores', 'cookies-levain', 'panacotas'],
-    'Alfajores': ['brownie', 'cookies-levain', 'tortas-2'],
-    'Desayunos sorpresa': ['alfajores', 'tortas-2', 'brownie'],
-    'Panacottas': ['alfajores', 'brownie'],
+    'Galletas y alfajores': ['brownie', 'panacotas', 'tortas-2'],
+    'Tortas': ['alfajores', 'panacotas', 'brownie'],
+    'Anchetas': ['alfajores', 'tortas-2', 'brownie'],
     'Salados': ['pave-klim', 'brownie', 'alfajores'],
-    'Almuerzos personalizados': ['brownie', 'panacotas', 'pave-klim'],
-    'Personalizados': ['alfajores', 'tortas-1'],
+    'Almuerzos': ['brownie', 'panacotas', 'pave-klim'],
+    'Refrigerios': ['brownie', 'alfajores', 'cookies-levain'],
   },
 };
 
@@ -48,9 +46,8 @@ export const testimonials = [];
 // `prompt` son los productos pensados para grupos: en su ficha, su sección y la selección aparece el aviso
 // «¿Es para tu empresa?». Sin `prompt`, todos los de `options` lo muestran. Un brownie suelto no debe mostrarlo.
 export const corporate = [
-  {id:'almuerzos', label:'Almuerzos', one:'almuerzo', many:'almuerzos', options:['almuerzo-costilla', 'almuerzo-tradicional', 'lasana']},
-  {id:'desayunos', label:'Desayunos', one:'desayuno', many:'desayunos', options:['desayuno-corporativo', 'desayuno-corporativo-fruta']},
-  {id:'refrigerios', label:'Refrigerios', one:'refrigerio', many:'refrigerios', options:['arepa-rellena', 'sandwich-artesanal', 'amasijos']},
-  {id:'dulces', label:'Postres o mesa dulce', one:'porción de postre', many:'porciones de postre', options:['personalizados-3', 'alfajores', 'brownie', 'cookies-levain'], prompt:['personalizados-3']},
-  {id:'detalles', label:'Detalles corporativos', one:'detalle corporativo', many:'detalles corporativos', options:['personalizados-4']},
+  {id:'almuerzos', label:'Almuerzos', one:'almuerzo', many:'almuerzos', options:['costillas-bbq', 'montanera', 'lasana']},
+  {id:'refrigerios', label:'Refrigerios y desayunos', one:'refrigerio', many:'refrigerios', options:['snack-express', 'caja-snack', 'sandwich-cubano', 'arepa-rellena', 'amasijos'], prompt:['snack-express', 'caja-snack', 'arepa-rellena', 'amasijos']},
+  {id:'dulces', label:'Postres o mesa dulce', one:'porción de postre', many:'porciones de postre', options:['alfajores', 'brownie', 'cookies-levain'], prompt:[]},
+  {id:'detalles', label:'Cajas y detalles para regalar', one:'caja o detalle', many:'cajas o detalles', options:['caja-tradicion', 'caja-brunch', 'celebra-la-vida', 'caja-deluxe'], prompt:[]},
 ];

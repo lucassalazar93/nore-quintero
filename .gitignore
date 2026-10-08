@@ -4,3 +4,6 @@ node_modules/
 *.log
 .DS_Store
 .playwright-mcp/
+
+# Fotos que el negocio retiró del catálogo: se guardan en local, no se publican.
+fotos-retiradas/
